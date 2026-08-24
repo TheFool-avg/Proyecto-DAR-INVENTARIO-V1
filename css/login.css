@@ -1,0 +1,307 @@
+:root {
+    --primary-cyan: #2dd4bf;
+    --accent-blue: #0ea5e9;
+    /* Cambiamos el fondo de negro profundo a un gris azulado más suave */
+    --dark-bg: #1e293b; 
+    --glass-bg: rgba(255, 255, 255, 0.08); /* Ligeramente más transparente */
+    --glass-border: rgba(255, 255, 255, 0.15);
+    --text-slate: #cbd5e1; /* Texto más claro para mejor lectura */
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body { 
+    font-family: 'Inter', 'Roboto', sans-serif; 
+    overflow: hidden;
+    background: var(--dark-bg);
+}
+
+.cover-page {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    /* Se utiliza la ruta relativa a la carpeta de imágenes del proyecto */
+    background: url('../img/Background\ 1.png') center/cover no-repeat;
+    padding: 40px 20px 80px 20px;
+    overflow-y: auto;
+}
+.overlay {
+    position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+    /* Reducimos la intensidad del negro para que la foto de fondo sea más visible */
+    background: radial-gradient(circle at center, rgba(30, 41, 59, 0.2) 0%, rgba(30, 41, 59, 0.6) 100%);
+}
+
+.welcome-container {
+    position: relative;
+    z-index: 10;
+    width: 100%;
+    max-width: 440px;
+}
+
+.login-card {
+    /* Cambiamos el color de fondo de blanco (255,255,255) a un tono oscuro (0,0,0) */
+    /* El último valor (0.25) es la opacidad: súbelo si quieres más oscuro */
+    background: rgba(0, 0, 0, 0.4); 
+    
+    /* Mantenemos el desenfoque que da el efecto Aero Glass */
+    backdrop-filter: blur(20px) saturate(180%);
+    -webkit-backdrop-filter: blur(20px) saturate(180%);
+    
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 20px;
+    padding: 35px 30px;
+    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.5); /* Sombra más fuerte para contrastar */
+}
+
+.login-header {
+    text-align: center;
+    margin-bottom: 25px;
+}
+.logo-container {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 12px;
+}
+.login-logo {
+    height: 70px;
+    object-fit: contain;
+}
+.login-card h1 {
+    color: #fff;
+    font-size: 1.6rem;
+    font-weight: 700;
+    letter-spacing: -0.5px;
+    margin-bottom: 4px;
+}
+.subtitle {
+    color: var(--primary-cyan);
+    font-size: 0.78rem;
+    font-weight: 700;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+}
+
+.form-group-login {
+    display: flex;
+    flex-direction: column;
+}
+.form-group-login label {
+    color: #fff;
+    font-size: 0.75rem;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+    margin-bottom: 6px;
+    opacity: 0.8;
+}
+.form-group-login input {
+    background: rgba(255, 255, 255, 0.06);
+    border: 1px solid var(--glass-border);
+    border-radius: 8px;
+    padding: 12px 14px;
+    color: #fff;
+    font-size: 0.9rem;
+    outline: none;
+    margin-bottom: 15px;
+    transition: all 0.3s ease;
+}
+.form-group-login input:focus {
+    border-color: var(--primary-cyan);
+    background: rgba(15, 23, 42, 0.6);
+    box-shadow: 0 0 10px rgba(45, 212, 191, 0.2);
+}
+
+/* Manejo de inputs con iconos incorporados */
+.password-wrapper {
+    position: relative;
+    width: 100%;
+}
+.password-wrapper input {
+    width: 100%;
+    padding-right: 40px;
+}
+.password-wrapper i {
+    position: absolute;
+    right: 14px;
+    top: 38%;
+    transform: translateY(-50%);
+    color: var(--text-slate);
+    cursor: pointer;
+    font-size: 0.95rem;
+    transition: color 0.2s;
+}
+.password-wrapper i:hover { color: #fff; }
+
+/* Botones de Departamento anteriores (Mantenidos por si acaso, pero obsoletos) */
+.dept-btn-group {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 8px;
+    margin-bottom: 15px;
+}
+.btn-dept-select {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid var(--glass-border);
+    border-radius: 8px;
+    padding: 10px 4px;
+    color: var(--text-slate);
+    font-size: 0.72rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    text-align: center;
+}
+.btn-dept-select:hover { background: rgba(255, 255, 255, 0.1); color: #fff; }
+.btn-dept-select.active {
+    background: rgba(45, 212, 191, 0.15);
+    border-color: var(--primary-cyan);
+    color: var(--primary-cyan);
+    box-shadow: 0 0 8px rgba(45, 212, 191, 0.2);
+}
+
+/* ==========================================================================
+   ESTILOS PARA EL NUEVO SELECTOR DE DEPARTAMENTOS
+   ========================================================================== */
+.select-wrapper-login {
+    position: relative;
+    width: 100%;
+    margin-bottom: 15px;
+}
+
+.select-login {
+    width: 100%;
+    padding: 12px 40px 12px 15px;
+    background: rgba(255, 255, 255, 0.06);
+    border: 1px solid var(--glass-border);
+    border-radius: 8px;
+    color: #fff;
+    font-size: 0.9rem;
+    font-weight: 500;
+    outline: none;
+    transition: all 0.3s ease;
+    cursor: pointer;
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+}
+
+.select-login:focus {
+    border-color: var(--primary-cyan);
+    background: rgba(15, 23, 42, 0.6);
+    box-shadow: 0 0 10px rgba(45, 212, 191, 0.2);
+}
+
+.select-icon-login {
+    position: absolute;
+    right: 15px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--text-slate);
+    pointer-events: none;
+    font-size: 0.85rem;
+    transition: color 0.3s ease;
+}
+
+.select-login:focus + .select-icon-login {
+    color: var(--primary-cyan);
+}
+
+.select-login option {
+    background-color: var(--dark-bg);
+    color: #fff;
+    padding: 10px;
+}
+
+.select-login option:disabled {
+    color: var(--text-slate);
+}
+
+/* Botón de envío */
+.btn-login {
+    background: linear-gradient(135deg, var(--accent-blue) 0%, #0284c7 100%);
+    border: none;
+    border-radius: 8px;
+    padding: 14px;
+    color: white;
+    font-size: 0.95rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 12px rgba(14, 165, 233, 0.25);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+}
+.btn-login:hover { transform: translateY(-2px); box-shadow: 0 10px 20px rgba(2, 132, 199, 0.4); }
+
+/* Footer e Imagen */
+.footer-dem {
+    position: fixed; bottom: 0; left: 0; width: 100%; padding: 12px;
+    text-align: center; color: white; font-size: 0.75rem; font-weight: 600;
+    background: rgba(15, 23, 42, 0.9); border-top: 3px solid #ce1126; z-index: 1000;
+}
+
+.dama-justicia-bg {
+    position: fixed; top: 0; right: 0; width: 50%; height: 100%;
+    background: url('../img/justicia.png') no-repeat center right/contain;
+    opacity: 0.15; z-index: -1; pointer-events: none;
+}
+
+/* Toasts */
+.toast-success, .toast-error {
+    position: fixed; top: 20px; right: 20px; padding: 15px 25px;
+    border-radius: 10px; color: white; z-index: 10000; display: flex; align-items: center; gap: 12px;
+    animation: slideIn 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+    border: 1px solid rgba(255,255,255,0.1);
+}
+.toast-success { background: linear-gradient(135deg, #10b981 0%, #059669 100%); }
+.toast-error { background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%); }
+
+@keyframes slideIn {
+    from { transform: translateX(120%); opacity: 0; }
+    to { transform: translateX(0); opacity: 1; }
+}
+
+.form-group-login input {
+    background: rgba(255, 255, 255, 0.12); /* Un poco más de luz */
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    color: #ffffff; /* Asegura contraste */
+}
+
+.form-group-login input:focus {
+    background: rgba(255, 255, 255, 0.18);
+    border-color: var(--primary-cyan);
+}
+
+.login-switch {
+    text-align: center;
+    margin-top: 15px;
+    font-size: 0.85rem;
+    color: #fff;
+    opacity: 0.9;
+}
+
+.login-switch a {
+    color: var(--primary-cyan);
+    font-weight: 700;
+    text-decoration: none;
+    transition: 0.2s ease;
+}
+
+.login-switch a:hover {
+    color: #5ff7e8;
+}
+
+.grid-2 {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    width: 100%;
+}
+
+.grid-2 input {
+    width: 100%;
+}

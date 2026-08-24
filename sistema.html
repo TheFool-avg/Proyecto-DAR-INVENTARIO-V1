@@ -1,0 +1,743 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DAR Miranda - Inventario</title>
+
+    <link rel="stylesheet" href="css/sistema.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+
+    <!-- Librería Excel -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+</head>
+
+<body>
+
+<div class="dashboard-container">
+
+    <!-- ============================
+         SIDEBAR
+    ============================ -->
+    <aside class="sidebar">
+        <div class="sidebar-header">
+            <img src="img/Logo.png" alt="Logo DEM" class="sidebar-logo">
+            <div>
+                <h2>DAR Miranda</h2>
+                <p>Bienes Muebles</p>
+            </div>
+        </div>
+
+        <ul class="sidebar-menu">
+
+            <li id="menu-dash" class="active" onclick="irA('sec-dashboard')">
+                <i class="fas fa-chart-pie"></i> <span>Dashboard</span>
+            </li>
+
+            <li class="menu-title">Gestión de Inventario</li>
+            <li id="menu-inv-todos" onclick="irA('sec-bm1', 'todos')">
+                <i class="fas fa-boxes"></i> <span>Inventario General</span>
+            </li>
+
+            <div id="menu-inventario-departamentos"></div>
+
+            <li class="menu-title">Formatos Oficiales</li>
+            <li id="menu-rep-bm1" onclick="irA('sec-reporte-bm1')">
+                <i class="fas fa-file-invoice"></i> <span>Reporte BM-1</span>
+            </li>
+            <li id="menu-rep-bm2" onclick="irA('sec-reporte-bm2')">
+                <i class="fas fa-file-excel"></i> <span>Reporte BM-2</span>
+            </li>
+
+            <li class="menu-title">Archivo Judicial</li>
+            <li id="menu-exp" onclick="irA('sec-expedientes')">
+                <i class="fas fa-folder-open"></i> <span>Préstamo Expedientes</span>
+            </li>
+
+            <!-- ============================
+                 SEGURIDAD (ADMIN)
+            ============================ -->
+            <li class="menu-title admin-only" id="menu-audit" style="display:none;">Seguridad</li>
+
+            <li id="menu-log" class="admin-only" style="display:none;" onclick="irA('sec-auditoria')">
+                <i class="fas fa-shield-alt"></i> <span>Historial de Auditoría</span>
+            </li>
+
+            <!-- NUEVO: GESTOR DE USUARIOS -->
+            <li id="menu-usuarios" class="admin-only" style="display:none;" onclick="irA('sec-usuarios')">
+                <i class="fas fa-users-cog"></i> <span>Gestor de Usuarios</span>
+            </li>
+
+            <li id="menu-departamentos" class="admin-only" style="display:none;" onclick="irA('sec-departamentos')">
+                <i class="fas fa-building"></i> <span>Gestor de Departamentos</span>
+            </li>
+
+        </ul>
+
+        <div class="sidebar-footer" onclick="logout()">
+            <i class="fas fa-sign-out-alt"></i> <span>Cerrar Sesión</span>
+        </div>
+    </aside>
+
+    <!-- ============================
+         MAIN CONTENT
+    ============================ -->
+    <main class="main-content">
+
+        <!-- HEADER -->
+        <header class="top-header">
+            <div class="header-search">
+                <i class="fas fa-search"></i>
+                <input 
+                    type="text" 
+                    id="searchInput" 
+                    onkeyup="filtrar()" 
+                    placeholder="Buscar bienes por código, descripción, marca..."
+                >
+            </div>
+
+            <div class="header-user" onclick="toggleDropdownPer(event)">
+                <div class="user-avatar" id="display-user">U</div>
+                <div class="user-info">
+                    <span class="user-name" id="full-user-name">Cargando...</span>
+                    <span class="user-role">Analista</span>
+                </div>
+                <i class="fas fa-chevron-down"></i>
+
+                <div id="userDropdown" class="user-dropdown">
+                    <a href="javascript:void(0)" onclick="abrirModalPerfil()">
+                        <i class="fas fa-user-cog"></i> Configuración Perfil
+                    </a>
+                    <a href="javascript:void(0)" onclick="logout()" style="color: var(--danger);">
+                        <i class="fas fa-sign-out-alt"></i> Cerrar Sesión
+                    </a>
+                </div>
+            </div>
+        </header>
+
+        <!-- ============================
+             SECCIÓN: DASHBOARD
+        ============================ -->
+        <section id="sec-dashboard" class="content-section animate-fade" style="display: block;">
+            <h1 class="page-title">Panel de Control</h1>
+
+            <div class="stats-grid">
+
+                <div class="stat-card">
+                    <div class="stat-icon" style="background: rgba(8,14,99,0.1); color: var(--primary);">
+                        <i class="fas fa-cubes"></i>
+                    </div>
+                    <div class="stat-details">
+                        <h3 id="dash-total">0</h3>
+                        <p>Total Bienes</p>
+                    </div>
+                </div>
+
+                <div class="stat-card">
+                    <div class="stat-icon" style="background: rgba(34,197,94,0.1); color: var(--success);">
+                        <i class="fas fa-check-circle"></i>
+                    </div>
+                    <div class="stat-details">
+                        <h3 id="dash-excelente">0</h3>
+                        <p>En Excelente Estado</p>
+                    </div>
+                </div>
+
+                <div class="stat-card">
+                    <div class="stat-icon" style="background: rgba(245,158,11,0.1); color: var(--warning);">
+                        <i class="fas fa-tools"></i>
+                    </div>
+                    <div class="stat-details">
+                        <h3 id="dash-regular">0</h3>
+                        <p>Estado Regular</p>
+                    </div>
+                </div>
+
+                <div class="stat-card">
+                    <div class="stat-icon" style="background: rgba(239,68,68,0.1); color: var(--danger);">
+                        <i class="fas fa-times-circle"></i>
+                    </div>
+                    <div class="stat-details">
+                        <h3 id="dash-danado">0</h3>
+                        <p>Bienes Dañados</p>
+                    </div>
+                </div>
+
+            </div>
+
+            <div style="
+                margin-top: 30px;
+                background: white;
+                padding: 25px;
+                border-radius: 15px;
+                box-shadow: var(--shadow);
+            ">
+                <h2 style="font-size: 1.1rem; color: var(--accent); margin-bottom: 10px;">
+                    Dirección Ejecutiva de la Magistratura (DEM) - Dirección Administrativa Regional (DAR)
+                </h2>
+                <p style="font-size: 0.9rem; color: var(--text-muted); line-height: 1.6;">
+                    La Dirección Ejecutiva de la Magistratura (DEM) es el órgano auxiliar del Tribunal Supremo de Justicia de Venezuela 
+                    encargado de administrar, gobernar, supervisar y controlar el Poder Judicial. Su objetivo principal es gestionar los recursos financieros, humanos y de 
+                    infraestructura necesarios para garantizar el funcionamiento operativo de los tribunales en todo el país.
+                </p>
+            </div>
+        </section>
+
+   <!-- ============================
+         SECCIÓN: INVENTARIO
+============================ -->
+<section id="sec-bm1" class="content-section animate-fade">
+
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+
+        <div>
+            <h1 class="page-title" id="titulo-inventario">Inventario General de Bienes</h1>
+            <p class="section-subtitle" id="subtitulo-inventario">Listado completo de propiedad institucional</p>
+        </div>
+
+        <button class="btn-primary-lg" onclick="abrirModalBien()">
+            <i class="fas fa-plus"></i> Registrar Nuevo Bien
+        </button>
+
+    </div>
+
+    <div class="table-container">
+        <table class="data-table" id="tabla">
+            <thead>
+                <tr>
+                    <th>Código</th>
+                    <th>Descripción</th>
+                    <th>Marca</th>
+                    <th>Modelo</th>
+                    <th>Serial</th>
+                    <th>Ubicación</th>
+                    <th>Área</th>
+                    <th>Estado</th>
+                    <th style="text-align:center;">Acciones</th>
+                </tr>
+            </thead>
+            <tbody></tbody>
+        </table>
+    </div>
+</section>
+
+<!-- ============================
+     SECCIÓN: BM-1
+============================ -->
+<section id="sec-reporte-bm1" class="content-section animate-fade">
+
+    <div class="filter-container no-print" style="display:flex; align-items:center; gap:15px;">
+        <label style="font-weight: bold; font-size: 0.9rem;">Área de Adscripción:</label>
+
+        <select id="filtro-reporte-area" onchange="renderizarReporteBM1()"
+            style="padding: 8px; border-radius: 6px; border: 1px solid var(--border);">
+            <option value="todos">Todas las Áreas</option>
+        </select>
+
+        <button class="btn-primary-lg" onclick="window.print()" style="margin-left:auto;">
+            <i class="fas fa-print"></i> Imprimir Reporte BM-1
+        </button>
+    </div>
+
+    <div id="print-area" style="background:#fff; padding:30px; font-family:'Times New Roman', serif;">
+
+        <div class="bm1-header">
+            <div class="bm1-logo-container">
+                <img src="img/dem logo.png" class="bm1-logo" alt="Logo">
+            </div>
+
+            <div class="bm1-header-text">
+                <h2>REPÚBLICA BOLIVARIANA DE VENEZUELA</h2>
+                <p>DIRECCIÓN EJECUTIVA DE LA MAGISTRATURA</p>
+                <p>DIRECCIÓN ADMINISTRATIVA REGIONAL DEL ESTADO MIRANDA</p>
+            </div>
+
+            <div class="bm1-header-info">
+                <strong>FORMATO OFICIAL BM-1</strong><br>
+                <span>Fecha: <span id="bm1-fecha">--/--/----</span></span>
+            </div>
+        </div>
+
+        <h2 style="text-align:center; margin:20px 0; font-size:1.3rem; text-decoration:underline;">
+            INVENTARIO DE BIENES MUEBLES
+        </h2>
+
+        <table class="bm1-table">
+            <thead>
+                <tr>
+                    <th>CÓDIGO N°</th>
+                    <th>DESCRIPCIÓN DEL BIEN</th>
+                    <th>MARCA</th>
+                    <th>MODELO</th>
+                    <th>SERIAL N°</th>
+                    <th>UBICACIÓN</th>
+                    <th>ÁREA ASIGNADA</th>
+                    <th>ESTADO</th>
+                </tr>
+            </thead>
+            <tbody id="bm1-body"></tbody>
+        </table>
+        <div id="paginacion-bm1" class="paginacion-reportes"></div>
+    </div>
+</section>
+
+<!-- ============================
+     SECCIÓN: BM-2
+============================ -->
+<section id="sec-reporte-bm2" class="content-section animate-fade">
+
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
+        <div>
+            <h1 class="page-title">Reporte Oficial BM-2</h1>
+            <p class="section-subtitle">Relación de Bienes Muebles Desincorporados (Bajas)</p>
+        </div>
+
+        <button class="btn-primary-lg" onclick="exportarBM2Excel()" style="background:#15803d;">
+            <i class="fas fa-file-excel"></i> Exportar BM-2 a Excel
+        </button>
+    </div>
+
+    <div class="table-container">
+        <table class="data-table" id="tabla-bm2">
+            <thead>
+                <tr>
+                    <th>Código</th>
+                    <th>Descripción</th>
+                    <th>Marca/Modelo</th>
+                    <th>Serial</th>
+                    <th>Área Procedencia</th>
+                    <th>Fecha Baja</th>
+                    <th>Motivo Legal</th>
+                    <th>Autorizado por</th>
+                </tr>
+            </thead>
+            <tbody id="bm2-body"></tbody>
+        </table>
+        <div id="paginacion-bm2" class="paginacion-reportes"></div>
+    </div>
+</section>
+
+<!-- ============================
+     SECCIÓN: EXPEDIENTES
+============================ -->
+<section id="sec-expedientes" class="content-section animate-fade">
+
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
+        <div>
+            <h1 class="page-title">Archivo Judicial</h1>
+            <p class="section-subtitle">Control y Préstamo Interno de Expedientes</p>
+        </div>
+
+        <div style="display:flex; gap:10px;">
+            <button class="btn-primary-lg" onclick="exportarExcelExpedientes()" style="background:#16a34a;">
+                <i class="fas fa-file-excel"></i> Exportar Todo
+            </button>
+
+            <button class="btn-primary-lg" onclick="abrirModalExpediente()">
+                <i class="fas fa-plus"></i> Solicitar Expediente
+            </button>
+        </div>
+    </div>
+
+    <div class="table-container">
+       <table class="data-table" id="tabla-expedientes">
+    <thead>
+        <tr>
+            <th>N° Expediente</th>
+            <th>Carátula / Asunto</th>
+            <th>Tribunal Solicitado</th>
+            <th>Número de Oficio</th>
+            <th>Fecha Solicitud</th>
+            <th>N° de Acta de Remisión</th>
+            <th>Nombre del Alguacil</th>
+            <th>N° de Piezas</th>
+            <th>Observaciones</th>
+            <th>Estado Préstamo</th>
+            <th style="text-align:center; width:100px;">Acciones</th>
+        </tr>
+    </thead>
+    <tbody></tbody>
+</table>
+        <div id="paginacion-expedientes" class="paginacion-reportes" style="margin-top: 15px;"></div>
+    </div>
+</section>
+
+
+<div id="modalExpediente" class="modal">
+    <div class="modal-content" style="max-width:650px;">
+        <h3 class="modal-title">Solicitud de Archivo Judicial</h3>
+
+         <form id="formExpediente" onsubmit="guardarExpediente(event)">
+            <input type="hidden" id="e-index">
+            <div class="form-grid">
+                <div class="form-group">
+                    <label>N° de Expediente</label>
+                    <input type="text" id="e-num" placeholder="Ej. EXP-2026-001" required>
+                </div>
+
+                <div class="form-group">
+                    <label>Carátula / Asunto</label>
+                    <input type="text" id="e-asunto" placeholder="Ej. Pérez vs. López" required>
+                </div>
+            </div>
+
+            <div class="form-grid">
+                <div class="form-group">
+                    <label>Tribunal Solicitado</label>
+                    <input type="text" id="e-tribunal" placeholder="Ej. Tribunal Primero de Mediación" required>
+                </div>
+
+                <div class="form-group">
+                    <label>Número de Oficio</label>
+                    <input type="text" id="e-oficio" placeholder="Ej. OFI-2026-884" required>
+                </div>
+            </div>
+
+            <div class="form-grid">
+                <div class="form-group">
+                    <label>N° de Acta de Remisión</label>
+                    <input type="text" id="e-acta" placeholder="Ej. ACTA-2026-045" required>
+                </div>
+
+                <div class="form-group">
+                    <label>Nombre del Alguacil</label>
+                    <input type="text" id="e-alguacil" placeholder="Ej. Juan Pérez" required>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label>N° de Piezas</label>
+                <input type="number" id="e-piezas" placeholder="Ej. 1" min="1" required>
+            </div>
+
+            <div class="form-group">
+                <label>Observaciones</label>
+                <textarea id="e-observaciones" rows="3" placeholder="Observaciones adicionales (opcional)"></textarea>
+            </div>
+
+            <div class="modal-footer" style="display:flex; gap:10px; margin-top:25px;">
+                <button type="submit" class="btn-primary-lg" style="flex:1;">Registrar Préstamo</button>
+                <button type="button" class="btn-primary-lg" onclick="cerrarModalExpediente()" style="flex:1; background:#3b3b3d;">Cerrar</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- ============================
+     SECCIÓN: AUDITORÍA
+============================ -->
+<section id="sec-auditoria" class="content-section animate-fade">
+
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
+        <div>
+            <h1 class="page-title">Historial de Auditoría Interna</h1>
+            <p class="section-subtitle">Trazabilidad de acciones del personal sobre los activos públicos</p>
+        </div>
+        
+        <button class="btn-primary-lg" onclick="limpiarHistorialAuditoria()" style="background:#3b3b3d;">
+            <i class="fas fa-trash-alt"></i> Limpiar Registro
+        </button>
+    </div>
+
+    <!-- NUEVO BLOQUE DE FILTRO POR FECHAS -->
+    <div style="background:#f8fafc; padding:15px; border-radius:8px; margin-bottom:20px; display:flex; gap:15px; align-items:flex-end; border:1px solid #e2e8f0;">
+        <div>
+            <label style="display:block; font-size:0.8rem; font-weight:bold; margin-bottom:5px;">Desde:</label>
+            <input type="date" id="audit-fecha-inicio" style="padding:8px; border:1px solid #cbd5e1; border-radius:4px;">
+        </div>
+        <div>
+            <label style="display:block; font-size:0.8rem; font-weight:bold; margin-bottom:5px;">Hasta:</label>
+            <input type="date" id="audit-fecha-fin" style="padding:8px; border:1px solid #cbd5e1; border-radius:4px;">
+        </div>
+        <button class="btn-primary-lg" onclick="filtrarAuditoriaPorFecha()" style="background:#080e63;">
+            <i class="fas fa-filter"></i> Filtrar
+        </button>
+        <button class="btn-primary-lg" onclick="renderizarAuditoria()" style="background:#64748b;">
+            <i class="fas fa-sync"></i>
+        </button>
+    </div>
+
+    <div class="table-container">
+        <table class="log-table">
+            <thead>
+                <tr>
+                    <th style="width:180px;">Fecha y Hora</th>
+                    <th style="width:220px;">Usuario Operador</th>
+                    <th style="width:130px;">Operación</th>
+                    <th>Descripción de la Modificación</th>
+                </tr>
+            </thead>
+            <tbody id="audit-body"></tbody>
+        </table>
+        <div id="paginacion-auditoria" class="paginacion-reportes"></div>
+    </div>
+</section>
+
+<!-- ============================
+     SECCIÓN: GESTOR DE USUARIOS
+============================ -->
+<section id="sec-usuarios" class="content-section animate-fade" style="display:none;">
+
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
+        <div>
+            <h1 class="page-title">Gestor de Usuarios</h1>
+            <p class="section-subtitle">Administración interna de cuentas autorizadas</p>
+        </div>
+
+        <button class="btn-primary-lg" onclick="abrirModalUsuario()">
+            <i class="fas fa-user-plus"></i> Registrar Usuario
+        </button>
+    </div>
+
+    <div class="table-container">
+        <table class="data-table">
+    <thead>
+        <tr>
+            <th>Nombre</th>
+            <th>Correo</th>
+            <th>Departamento</th>
+            <th style="width:120px; text-align:center;">Acciones</th>
+        </tr>
+    </thead>
+    <tbody id="usuarios-body"></tbody>
+</table>
+        <div id="paginacion-usuarios" class="paginacion-reportes"></div>
+
+    </div>
+</section>
+
+<!-- ============================
+     SECCIÓN: GESTOR DE DEPARTAMENTOS
+============================ -->
+<section id="sec-departamentos" class="content-section animate-fade" style="display:none;">
+
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
+        <div>
+            <h1 class="page-title">Gestor de Departamentos</h1>
+            <p class="section-subtitle">Administración interna de áreas y departamentos del sistema</p>
+        </div>
+
+        <button class="btn-primary-lg" onclick="abrirModalDepartamento()">
+            <i class="fas fa-plus"></i> Registrar Departamento
+        </button>
+    </div>
+
+    <div class="table-container">
+        <table class="data-table">
+            <thead>
+                <tr>
+                    <th>Departamento</th>
+                    <th style="width:120px; text-align:center;">Acciones</th>
+                </tr>
+            </thead>
+            <tbody id="departamentos-body"></tbody>
+
+        </table>
+        <div id="paginacion-departamentos" class="paginacion-reportes"></div>
+    </div>
+</section>
+
+    <!-- ============================
+         MODALES
+============================ -->
+
+<!-- MODAL BIEN -->
+<div id="modalBien" class="modal">
+    <div class="modal-content" style="max-width: 520px;">
+        <h3 id="modal-bien-titulo" class="modal-title">Registrar Activo</h3>
+
+        <form id="formBien" onsubmit="guardarBien(event)">
+            <input type="hidden" id="b-index">
+
+            <div class="form-grid">
+                <div class="form-group">
+                    <label>Código del Bien Mueble</label>
+                    <input type="text" id="b-cod" placeholder="Ej. DEM-DAR-MIR-0001" required>
+                </div>
+
+                <div class="form-group">
+                    <label>Área Administrativa</label>
+                    <select id="b-are" required>
+                        <option value="Finanzas">Finanzas</option>
+                        <option value="Tecnología">Tecnología</option>
+                        <option value="Servicios Judiciales">Servicios Judiciales</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label>Descripción del Bien</label>
+                <input type="text" id="b-desc" required>
+            </div>
+
+            <div class="form-grid">
+                <div class="form-group">
+                    <label>Marca</label>
+                    <input type="text" id="b-mar">
+                </div>
+                <div class="form-group">
+                    <label>Modelo</label>
+                    <input type="text" id="b-mod">
+                </div>
+            </div>
+
+            <div class="form-grid">
+                <div class="form-group">
+                    <label>Serial</label>
+                    <input type="text" id="b-ser">
+                </div>
+                <div class="form-group">
+                    <label>Ubicación Física</label>
+                    <input type="text" id="b-ubi" required>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label>Estado del Bien</label>
+                <select id="b-est" required>
+                    <option value="Excelente">Excelente</option>
+                    <option value="Regular">Regular</option>
+                    <option value="Dañado">Dañado</option>
+                </select>
+            </div>
+
+            <div class="modal-footer" style="display:flex; gap:10px; margin-top:25px;">
+                <button type="submit" class="btn-primary-lg" style="flex:1;">Guardar</button>
+                <button type="button" class="btn-primary-lg" onclick="cerrarModalBien()" style="flex:1; background:#3b3b3d;">Cancelar</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+
+<!-- MODAL CONFIRMAR BAJA -->
+<div id="modalConfirmar" class="modal">
+    <div class="modal-content" style="max-width:440px;">
+        <div style="text-align:center; margin-bottom:15px;">
+            <i class="fas fa-exclamation-triangle" style="color:var(--danger); font-size:2.5rem;"></i>
+            <h3 style="margin-top:10px; color:var(--accent);">Orden de Desincorporación (Baja)</h3>
+            <p style="font-size:0.85rem; color:var(--text-muted);">
+                El activo se removerá del inventario activo y se registrará en la planilla oficial BM-2.
+            </p>
+        </div>
+
+        <form onsubmit="ejecutarBorrado(event)">
+            <div class="form-group">
+                <label>Motivo Legal de la Baja</label>
+                <select id="des-motivo" required>
+                    <option value="" disabled selected hidden>Seleccione un motivo legal...</option>
+                    <option value="Deterioro Irreparable / Daño">Deterioro Irreparable / Daño</option>
+                    <option value="Obsolescencia Tecnológica">Obsolescencia Tecnológica</option>
+                    <option value="Hurto o Pérdida (Con Oficio)">Hurto o Pérdida (Con Oficio)</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label>N° Oficio Justificativo</label>
+                <input type="text" id="des-oficio" placeholder="Ej. OFI-DAR-MIR-2026-01" required>
+            </div>
+
+            <div class="modal-footer" style="display:flex; gap:10px; margin-top:25px;">
+                <button type="submit" class="btn-primary-lg" style="background:var(--danger); flex:1;">Efectuar Baja</button>
+                <button type="button" class="btn-primary-lg" onclick="cerrarModalConfirmar()" style="background:#3b3b3d; flex:1;">Cancelar</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+
+<!-- MODAL PERFIL -->
+<div id="modalPerfil" class="modal">
+    <div class="modal-content" style="max-width:420px;">
+        <h3 class="modal-title">Perfil del Funcionario</h3>
+
+        <form id="formPerfil" onsubmit="guardarPerfil(event)">
+            <div class="form-group">
+                <label>Nombre y Apellido</label>
+                <input type="text" id="p-nombre" required>
+            </div>
+
+            <div class="form-group">
+                <label>Departamento / Cargo</label>
+                <input type="text" id="p-cargo" readonly style="background:#f1f5f9;">
+            </div>
+
+            <div class="modal-footer" style="display:flex; gap:10px; margin-top:25px;">
+                <button type="submit" class="btn-primary-lg" style="flex:1;">Actualizar Datos</button>
+                <button type="button" class="btn-primary-lg" onclick="cerrarModalPerfil()" style="flex:1; background:#3b3b3d;">Cerrar</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+
+<!-- ============================
+     NUEVO MODAL: GESTOR DE USUARIOS
+============================ -->
+<div id="modalUsuario" class="modal">
+    <div class="modal-content" style="max-width:420px;">
+        <h3 id="modal-usuario-titulo" class="modal-title">Registrar Nuevo Usuario</h3>
+
+        <form id="formUsuario" onsubmit="guardarUsuario(event)">
+            <div class="form-group">
+                <label>Nombre y Apellido</label>
+                <input type="text" id="u-nombre" required>
+            </div>
+
+            <div class="form-group">
+                <label>Correo Electrónico</label>
+                <input type="email" id="u-correo" required>
+            </div>
+
+            <div class="form-group">
+                <label>Nivel de Usuario</label>
+                <select id="u-nivel" required>
+                    <option value="" disabled selected hidden>Selecciona el nivel...</option>
+                    <option value="Finanzas">Analista de Finanzas</option>
+                    <option value="Tecnología">Analista de Tecnología</option>
+                    <option value="Servicios Judiciales">Analista de Servicios Judiciales</option>
+                    <option value="todos">Administrador General</option>
+                </select>
+            </div>
+
+
+            <div class="form-group">
+                <label>Contraseña</label>
+                <input type="password" id="u-pass" required>
+            </div>
+
+            <div class="modal-footer" style="display:flex; gap:10px; margin-top:25px;">
+                <button type="submit" class="btn-primary-lg" style="flex:1;">Guardar</button>
+                <button type="button" class="btn-primary-lg" onclick="cerrarModalUsuario()" style="flex:1; background:#3b3b3d;">Cancelar</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+
+<!-- MODAL DEPARTAMENTO -->
+<div id="modalDepartamento" class="modal">
+    <div class="modal-content" style="max-width:420px;">
+        <h3 class="modal-title">Registrar Nuevo Departamento</h3>
+
+        <form id="formDepartamento" onsubmit="guardarDepartamento(event)">
+            <div class="form-group">
+                <label>Nombre del Departamento</label>
+                <input type="text" id="d-nombre" placeholder="Ej. Recursos Humanos" required>
+            </div>
+
+            <div class="modal-footer" style="display:flex; gap:10px; margin-top:25px;">
+                <button type="submit" class="btn-primary-lg" style="flex:1;">Guardar</button>
+                <button type="button" class="btn-primary-lg" onclick="cerrarModalDepartamento()" style="flex:1; background:#3b3b3d;">Cancelar</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- TOASTS -->
+<div id="toast-box" style="position:fixed; top:20px; right:20px; z-index:99999;"></div>
+
+<!-- MAIN JS -->
+<script type="module" src="js/main.js"></script>
+</body>
+</html>
