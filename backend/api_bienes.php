@@ -1,6 +1,9 @@
 <?php
 include 'conexion.php';
+include 'auth_check.php';
 header('Content-Type: application/json; charset=utf-8');
+
+$usuarioActual = requerirSesion();
 
 $method = $_SERVER['REQUEST_METHOD'];
 
