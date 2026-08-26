@@ -1,6 +1,9 @@
 <?php
 include 'conexion.php';
+include 'auth_check.php';
 header('Content-Type: application/json; charset=utf-8');
+
+$usuarioActual = requerirSesion();
 
 $method = $_SERVER['REQUEST_METHOD'];
 
@@ -16,8 +19,14 @@ if ($method == 'GET') {
     exit;
 }
 
-// --- POST: REGISTRAR NUEVO DEPARTAMENTO ---
+// --- POST: REGISTRAR NUEVO DEPARTAMENTO (SOLO ADMINISTRADOR GENERAL) ---
 if ($method == 'POST') {
+    if ($usuarioActual['nivel'] !== 'todos') {
+        http_response_code(403);
+        echo json_encode(["success" => false, "error" => "No tienes permisos para crear departamentos"]);
+        exit;
+    }
+
     $data = json_decode(file_get_contents("php://input"), true);
 
     if (!$data || empty(trim($data['nombre'] ?? ''))) {
@@ -44,8 +53,14 @@ if ($method == 'POST') {
     exit;
 }
 
-// --- PUT: RENOMBRAR DEPARTAMENTO EXISTENTE (ahora por ID) ---
+// --- PUT: RENOMBRAR DEPARTAMENTO EXISTENTE (SOLO ADMINISTRADOR GENERAL — ahora por ID) ---
 if ($method == 'PUT') {
+    if ($usuarioActual['nivel'] !== 'todos') {
+        http_response_code(403);
+        echo json_encode(["success" => false, "error" => "No tienes permisos para editar departamentos"]);
+        exit;
+    }
+
     $data = json_decode(file_get_contents("php://input"), true);
 
     $id          = intval($data['id'] ?? 0);
@@ -75,8 +90,14 @@ if ($method == 'PUT') {
     exit;
 }
 
-// --- DELETE: ELIMINAR DEPARTAMENTO (ahora por ID) ---
+// --- DELETE: ELIMINAR DEPARTAMENTO (SOLO ADMINISTRADOR GENERAL — ahora por ID) ---
 if ($method == 'DELETE') {
+    if ($usuarioActual['nivel'] !== 'todos') {
+        http_response_code(403);
+        echo json_encode(["success" => false, "error" => "No tienes permisos para eliminar departamentos"]);
+        exit;
+    }
+
     $data = json_decode(file_get_contents("php://input"), true);
 
     $id = intval($data['id'] ?? 0);

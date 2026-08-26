@@ -1,6 +1,9 @@
 <?php
 include 'conexion.php';
+include 'auth_check.php';
 header('Content-Type: application/json; charset=utf-8');
+
+$usuarioActual = requerirSesion();
 
 $method = $_SERVER['REQUEST_METHOD'];
 
@@ -22,8 +25,14 @@ if ($method == 'GET') {
     exit;
 }
 
-// --- POST: REGISTRAR NUEVO USUARIO ---
+// --- POST: REGISTRAR NUEVO USUARIO (SOLO ADMINISTRADOR GENERAL) ---
 if ($method == 'POST') {
+    if ($usuarioActual['nivel'] !== 'todos') {
+        http_response_code(403);
+        echo json_encode(["success" => false, "error" => "No tienes permisos para crear usuarios"]);
+        exit;
+    }
+
     $data = json_decode(file_get_contents("php://input"), true);
 
     $nombre = trim($data['nombre'] ?? '');
@@ -72,8 +81,14 @@ if ($method == 'POST') {
     exit;
 }
 
-// --- PUT: EDITAR USUARIO EXISTENTE (LA CONTRASEÑA SOLO SE ACTUALIZA SI SE ENVÍA) ---
+// --- PUT: EDITAR USUARIO EXISTENTE (SOLO ADMINISTRADOR GENERAL — LA CONTRASEÑA SOLO SE ACTUALIZA SI SE ENVÍA) ---
 if ($method == 'PUT') {
+    if ($usuarioActual['nivel'] !== 'todos') {
+        http_response_code(403);
+        echo json_encode(["success" => false, "error" => "No tienes permisos para editar usuarios"]);
+        exit;
+    }
+
     $data = json_decode(file_get_contents("php://input"), true);
 
     $correo = strtolower(trim($data['correo'] ?? ''));
@@ -118,8 +133,14 @@ if ($method == 'PUT') {
     exit;
 }
 
-// --- DELETE: ELIMINAR USUARIO (sin cambios) ---
+// --- DELETE: ELIMINAR USUARIO (SOLO ADMINISTRADOR GENERAL) ---
 if ($method == 'DELETE') {
+    if ($usuarioActual['nivel'] !== 'todos') {
+        http_response_code(403);
+        echo json_encode(["success" => false, "error" => "No tienes permisos para eliminar usuarios"]);
+        exit;
+    }
+
     $data = json_decode(file_get_contents("php://input"), true);
 
     $correo = strtolower(trim($data['correo'] ?? ''));
