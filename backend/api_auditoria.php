@@ -1,6 +1,9 @@
 <?php
 header('Content-Type: application/json; charset=utf-8');
 require_once __DIR__ . '/conexion.php';
+require_once __DIR__ . '/auth_check.php';
+
+$usuarioActual = requerirSesion();
 
 $metodo = $_SERVER['REQUEST_METHOD'];
 
@@ -73,6 +76,21 @@ if ($metodo === 'POST') {
 
     if ($conexion->query($sql)) {
         echo json_encode(["success" => true, "mensaje" => "Registro de auditoría guardado"]);
+    } else {
+        echo json_encode(["success" => false, "error" => $conexion->error]);
+    }
+    exit;
+}
+
+if ($metodo === 'DELETE') {
+    if ($usuarioActual['nivel'] !== 'todos') {
+        http_response_code(403);
+        echo json_encode(["success" => false, "error" => "No tienes permisos para limpiar el historial de auditoría"]);
+        exit;
+    }
+
+    if ($conexion->query("TRUNCATE TABLE auditoria")) {
+        echo json_encode(["success" => true, "mensaje" => "Historial de auditoría vaciado correctamente"]);
     } else {
         echo json_encode(["success" => false, "error" => $conexion->error]);
     }
