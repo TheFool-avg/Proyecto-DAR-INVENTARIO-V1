@@ -25,7 +25,7 @@ async function obtenerAuditoria(pagina, fechaDesde = null, fechaHasta = null) {
     if (fechaHasta) url += `&fecha_hasta=${fechaHasta}`;
 
     try {
-        const respuesta = await fetch(url);
+        const respuesta = await fetch(url, { credentials: 'include' });
         return await respuesta.json();
     } catch (error) {
         console.error('Error al obtener auditoría:', error);
@@ -55,6 +55,8 @@ export async function registrarLog(operacion, descripcion) {
     try {
         await fetch('backend/api_auditoria.php', {
             method: 'POST',
+            credentials: 'include',
+            headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
                 usuario: `${USER_NAME} (${USER_EMAIL})`,
                 operacion,
@@ -138,10 +140,21 @@ export async function renderizarAuditoria() {
 export async function limpiarHistorialAuditoria() {
     if (confirm("¿Seguro que desea vaciar de forma permanente la auditoría de operaciones?")) {
         try {
-            await fetch('backend/api_auditoria.php', { method: 'DELETE' });
+            const respuesta = await fetch('backend/api_auditoria.php', {
+                method: 'DELETE',
+                credentials: 'include'
+            });
+            const data = await respuesta.json();
+
+            if (data.success) {
+                await registrarLog("seguridad", "Vació el historial de auditoría de manera manual.");
+            } else {
+                alert(data.error || "No se pudo vaciar el historial de auditoría.");
+                await renderizarAuditoria();
+            }
         } catch (error) {
             console.error('Error al vaciar auditoría:', error);
+            alert("Ocurrió un error al intentar vaciar el historial.");
         }
-        await registrarLog("seguridad", "Vació el historial de auditoría de manera manual.");
     }
 }
