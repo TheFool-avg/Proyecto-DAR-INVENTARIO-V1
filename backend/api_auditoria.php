@@ -77,7 +77,8 @@ if ($metodo === 'POST') {
     if ($conexion->query($sql)) {
         echo json_encode(["success" => true, "mensaje" => "Registro de auditoría guardado"]);
     } else {
-        echo json_encode(["success" => false, "error" => $conexion->error]);
+        error_log("Error MySQL en api_auditoria.php: " . $conexion->error);
+        echo json_encode(["success" => false, "error" => "Error interno del servidor. Intente nuevamente."]);
     }
     exit;
 }
@@ -92,7 +93,8 @@ if ($metodo === 'DELETE') {
     if ($conexion->query("TRUNCATE TABLE auditoria")) {
         echo json_encode(["success" => true, "mensaje" => "Historial de auditoría vaciado correctamente"]);
     } else {
-        echo json_encode(["success" => false, "error" => $conexion->error]);
+        error_log("Error MySQL en api_auditoria.php: " . $conexion->error);
+        echo json_encode(["success" => false, "error" => "Error interno del servidor. Intente nuevamente."]);
     }
     exit;
 }

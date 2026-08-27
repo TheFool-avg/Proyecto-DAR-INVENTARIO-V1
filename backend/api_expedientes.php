@@ -91,7 +91,8 @@ if ($method == 'POST') {
     if ($conexion->query($sql) === TRUE) {
         echo json_encode(["success" => true, "mensaje" => "Préstamo de expediente registrado correctamente"]);
     } else {
-        echo json_encode(["success" => false, "error" => $conexion->error]);
+        error_log("Error MySQL en api_expedientes.php (POST): " . $conexion->error);
+        echo json_encode(["success" => false, "error" => "Error interno del servidor. Intente nuevamente."]);
     }
     exit;
 }
@@ -121,7 +122,8 @@ if ($method == 'PUT') {
         if ($conexion->query($sql) === TRUE) {
             echo json_encode(["success" => true, "mensaje" => "Expediente marcado como devuelto"]);
         } else {
-            echo json_encode(["success" => false, "error" => $conexion->error]);
+            error_log("Error MySQL en api_expedientes.php (PUT devolver): " . $conexion->error);
+            echo json_encode(["success" => false, "error" => "Error interno del servidor. Intente nuevamente."]);
         }
         exit;
     }
@@ -149,7 +151,8 @@ if ($method == 'PUT') {
     if ($conexion->query($sql) === TRUE) {
         echo json_encode(["success" => true, "mensaje" => "Expediente actualizado correctamente"]);
     } else {
-        echo json_encode(["success" => false, "error" => $conexion->error]);
+        error_log("Error MySQL en api_expedientes.php (PUT actualizar): " . $conexion->error);
+        echo json_encode(["success" => false, "error" => "Error interno del servidor. Intente nuevamente."]);
     }
     exit;
 }
@@ -175,7 +178,8 @@ if ($method == 'DELETE') {
     if ($conexion->query($sql) === TRUE) {
         echo json_encode(["success" => true, "mensaje" => "Expediente eliminado correctamente"]);
     } else {
-        echo json_encode(["success" => false, "error" => $conexion->error]);
+        error_log("Error MySQL en api_expedientes.php (DELETE): " . $conexion->error);
+        echo json_encode(["success" => false, "error" => "Error interno del servidor. Intente nuevamente."]);
     }
     exit;
 }

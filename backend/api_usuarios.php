@@ -76,7 +76,8 @@ if ($method == 'POST') {
     if ($conexion->query($sql) === TRUE) {
         echo json_encode(["success" => true, "mensaje" => "Usuario registrado correctamente"]);
     } else {
-        echo json_encode(["success" => false, "error" => $conexion->error]);
+        error_log("Error MySQL en api_usuarios.php: " . $conexion->error);
+        echo json_encode(["success" => false, "error" => "Error interno del servidor. Intente nuevamente."]);
     }
     exit;
 }
@@ -128,7 +129,8 @@ if ($method == 'PUT') {
     if ($conexion->query($sql) === TRUE) {
         echo json_encode(["success" => true, "mensaje" => "Usuario actualizado correctamente"]);
     } else {
-        echo json_encode(["success" => false, "error" => $conexion->error]);
+        error_log("Error MySQL en api_usuarios.php: " . $conexion->error);
+        echo json_encode(["success" => false, "error" => "Error interno del servidor. Intente nuevamente."]);
     }
     exit;
 }
@@ -156,7 +158,8 @@ if ($method == 'DELETE') {
     if ($conexion->query($sql) === TRUE) {
         echo json_encode(["success" => true, "mensaje" => "Usuario eliminado correctamente"]);
     } else {
-        echo json_encode(["success" => false, "error" => $conexion->error]);
+        error_log("Error MySQL en api_usuarios.php: " . $conexion->error);
+        echo json_encode(["success" => false, "error" => "Error interno del servidor. Intente nuevamente."]);
     }
     exit;
 }

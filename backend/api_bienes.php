@@ -61,7 +61,8 @@ if ($method == 'POST') {
     if ($conexion->query($sql) === TRUE) {
         echo json_encode(["success" => true, "mensaje" => "Bien registrado correctamente"]);
     } else {
-        echo json_encode(["success" => false, "error" => $conexion->error]);
+        error_log("Error MySQL en api_bienes.php: " . $conexion->error);
+        echo json_encode(["success" => false, "error" => "Error interno del servidor. Intente nuevamente."]);
     }
     exit;
 }
@@ -88,7 +89,8 @@ if ($method == 'PUT') {
         if ($conexion->query($sql) === TRUE) {
             echo json_encode(["success" => true, "mensaje" => "Activo desincorporado correctamente"]);
         } else {
-            echo json_encode(["success" => false, "error" => $conexion->error]);
+            error_log("Error MySQL en api_bienes.php: " . $conexion->error);
+        echo json_encode(["success" => false, "error" => "Error interno del servidor. Intente nuevamente."]);
         }
     } else {
         // Actualización normal de datos
@@ -123,7 +125,8 @@ if ($method == 'PUT') {
         if ($conexion->query($sql) === TRUE) {
             echo json_encode(["success" => true, "mensaje" => "Activo actualizado correctamente"]);
         } else {
-            echo json_encode(["success" => false, "error" => $conexion->error]);
+            error_log("Error MySQL en api_bienes.php: " . $conexion->error);
+        echo json_encode(["success" => false, "error" => "Error interno del servidor. Intente nuevamente."]);
         }
     }
     exit;

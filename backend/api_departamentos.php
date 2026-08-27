@@ -48,7 +48,8 @@ if ($method == 'POST') {
     if ($conexion->query($sql) === TRUE) {
         echo json_encode(["success" => true, "mensaje" => "Departamento registrado correctamente", "id" => $conexion->insert_id]);
     } else {
-        echo json_encode(["success" => false, "error" => $conexion->error]);
+        error_log("Error MySQL en api_departamentos.php: " . $conexion->error);
+        echo json_encode(["success" => false, "error" => "Error interno del servidor. Intente nuevamente."]);
     }
     exit;
 }
@@ -85,7 +86,8 @@ if ($method == 'PUT') {
     if ($conexion->query($sql) === TRUE) {
         echo json_encode(["success" => true, "mensaje" => "Departamento actualizado correctamente"]);
     } else {
-        echo json_encode(["success" => false, "error" => $conexion->error]);
+        error_log("Error MySQL en api_departamentos.php: " . $conexion->error);
+        echo json_encode(["success" => false, "error" => "Error interno del servidor. Intente nuevamente."]);
     }
     exit;
 }
@@ -112,7 +114,8 @@ if ($method == 'DELETE') {
     if ($conexion->query($sql) === TRUE) {
         echo json_encode(["success" => true, "mensaje" => "Departamento eliminado correctamente"]);
     } else {
-        echo json_encode(["success" => false, "error" => $conexion->error]);
+        error_log("Error MySQL en api_departamentos.php: " . $conexion->error);
+        echo json_encode(["success" => false, "error" => "Error interno del servidor. Intente nuevamente."]);
     }
     exit;
 }
