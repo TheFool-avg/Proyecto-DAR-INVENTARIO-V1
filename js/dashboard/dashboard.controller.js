@@ -53,7 +53,9 @@ export async function configurarInterfazSegunRol() {
 // --- ACTUALIZAR TARJETAS DEL DASHBOARD (AHORA DESDE LA BASE DE DATOS REAL) ---
 export async function actualizarDashboard() {
     try {
-        const respuesta = await fetch('backend/api_bienes.php');
+        const respuesta = await fetch('backend/api_bienes.php', {
+            credentials: 'include'
+        });
         const db = await respuesta.json();
 
         const total = db.length;

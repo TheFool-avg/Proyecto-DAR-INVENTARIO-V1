@@ -3,7 +3,9 @@
 // --- OBTENER TODOS LOS USUARIOS (DESDE LA BASE DE DATOS, SIN CONTRASEÑA) ---
 export async function obtenerUsuarios() {
     try {
-        const respuesta = await fetch('backend/api_usuarios.php');
+        const respuesta = await fetch('backend/api_usuarios.php', {
+            credentials: 'include'
+        });
         return await respuesta.json();
     } catch (error) {
         console.error("Error al obtener usuarios:", error);
@@ -16,6 +18,7 @@ export async function crearUsuario({ nombre, correo, nivel, clave }) {
     try {
         const respuesta = await fetch('backend/api_usuarios.php', {
             method: 'POST',
+            credentials: 'include',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ nombre, correo, nivel, clave })
         });
@@ -31,6 +34,7 @@ export async function actualizarUsuario({ correo, nombre, nivel, clave }) {
     try {
         const respuesta = await fetch('backend/api_usuarios.php', {
             method: 'PUT',
+            credentials: 'include',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ correo, nombre, nivel, clave })
         });
@@ -46,6 +50,7 @@ export async function eliminarUsuarioAPI(correo) {
     try {
         const respuesta = await fetch('backend/api_usuarios.php', {
             method: 'DELETE',
+            credentials: 'include',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ correo })
         });
