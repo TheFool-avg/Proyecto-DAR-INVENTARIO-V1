@@ -20,7 +20,9 @@ export async function renderizarTablas() {
     tbody.innerHTML = `<tr><td colspan="9" style="text-align:center; padding:20px;">Cargando datos desde la base de datos...</td></tr>`;
 
     try {
-        const respuesta = await fetch('backend/api_bienes.php');
+        const respuesta = await fetch('backend/api_bienes.php', {
+            credentials: 'include'
+        });
         const db = await respuesta.json();
 
         tbody.innerHTML = "";
@@ -179,7 +181,9 @@ export async function abrirModalBien(codigoBien = null) {
     if (codigoBien !== null) {
         document.getElementById('modal-bien-titulo').innerText = "Modificar Activo";
         try {
-            const respuesta = await fetch('backend/api_bienes.php');
+            const respuesta = await fetch('backend/api_bienes.php', {
+                credentials: 'include'
+            });
             const db = await respuesta.json();
             const item = db.find(b => b.codigo === codigoBien);
 

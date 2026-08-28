@@ -56,6 +56,7 @@ export async function guardarBien(e) {
     try {
         const respuesta = await fetch('backend/api_bienes.php', {
             method: metodoHttp,
+            credentials: 'include',
             headers: {
                 'Content-Type': 'application/json'
             },
@@ -103,6 +104,7 @@ export async function ejecutarBorrado(e) {
     try {
         const respuesta = await fetch('backend/api_bienes.php', {
             method: 'PUT',
+            credentials: 'include',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ codigo: indiceABorrar, motivo, oficio })
         });

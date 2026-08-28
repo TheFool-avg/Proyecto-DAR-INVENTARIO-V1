@@ -54,7 +54,9 @@ export async function renderizarReporteBM1() {
     document.getElementById('bm1-fecha').innerText = new Date().toLocaleDateString('es-VE');
 
     try {
-        const respuesta = await fetch('backend/api_bienes.php?tipo=activos');
+        const respuesta = await fetch('backend/api_bienes.php?tipo=activos', {
+            credentials: 'include'
+        });
         const db = await respuesta.json();
 
         bm1body.innerHTML = "";
@@ -120,7 +122,9 @@ export async function renderizarReporteBM2() {
 
     try {
         // Solicitamos específicamente los bienes desincorporados a la base de datos
-        const respuesta = await fetch('backend/api_bienes.php?tipo=baja');
+        const respuesta = await fetch('backend/api_bienes.php?tipo=baja', {
+            credentials: 'include'
+        });
         const db_bajas = await respuesta.json();
 
         tbody.innerHTML = "";
