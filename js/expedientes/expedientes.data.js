@@ -1,9 +1,5 @@
 // js/expedientes/expedientes.data.js
 
-function obtenerCorreoActual() {
-    return sessionStorage.getItem('user_email') || '';
-}
-
 // --- OBTENER EXPEDIENTES (por defecto solo los "En Préstamo") ---
 export async function obtenerExpedientes(tipo = 'activos') {
     try {

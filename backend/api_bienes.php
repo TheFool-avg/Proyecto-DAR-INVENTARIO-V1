@@ -43,6 +43,11 @@ if ($method == 'POST') {
     $marca = $conexion->real_escape_string($data['marca'] ?? '');
     $modelo = $conexion->real_escape_string($data['modelo'] ?? '');
     $serial = $conexion->real_escape_string($data['serial'] ?? '');
+
+    if (trim($serial) === '') {
+        echo json_encode(["success" => false, "error" => "El serial es obligatorio"]);
+        exit;
+    }
     $ubicacion = $conexion->real_escape_string($data['ubicacion'] ?? '');
     $area = $conexion->real_escape_string($data['area'] ?? '');
     $estado = $conexion->real_escape_string($data['estado'] ?? 'Excelente');
@@ -54,6 +59,13 @@ if ($method == 'POST') {
         exit;
     }
     $departamentoId = intval($resDep->fetch_assoc()['id']);
+
+    // Verificar que el serial no esté repetido en otro bien
+    $checkSerial = $conexion->query("SELECT id FROM bienes WHERE serial = '$serial'");
+    if ($checkSerial && $checkSerial->num_rows > 0) {
+        echo json_encode(["success" => false, "error" => "Ya existe un bien registrado con ese serial"]);
+        exit;
+    }
 
     $sql = "INSERT INTO bienes (codigo, descripcion, marca, modelo, serial, ubicacion, area, departamento_id, estado) 
             VALUES ('$codigo', '$descripcion', '$marca', '$modelo', '$serial', '$ubicacion', '$area', $departamentoId, '$estado')";
@@ -109,6 +121,13 @@ if ($method == 'PUT') {
             exit;
         }
         $departamentoId = intval($resDep->fetch_assoc()['id']);
+
+        // Verificar que el serial no esté repetido en OTRO bien (excluyendo el que se está editando)
+        $checkSerial = $conexion->query("SELECT id FROM bienes WHERE serial = '$serial' AND codigo != '$codigoOriginal'");
+        if ($checkSerial && $checkSerial->num_rows > 0) {
+            echo json_encode(["success" => false, "error" => "Ya existe otro bien registrado con ese serial"]);
+            exit;
+        }
 
         $sql = "UPDATE bienes SET 
                 codigo = '$codigo',
