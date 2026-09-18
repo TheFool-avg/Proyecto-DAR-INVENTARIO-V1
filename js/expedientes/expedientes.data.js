@@ -18,13 +18,13 @@ export async function obtenerExpedientes(tipo = 'activos') {
 }
 
 // --- REGISTRAR NUEVO PRÉSTAMO DE EXPEDIENTE ---
-export async function crearExpediente({ num, asunto, tribunal, oficio, acta, alguacil, piezas, observaciones }) {
+export async function crearExpediente({ num, fechaSolicitud, tribunal, oficio, legajo, fechaPrestamo, acta, alguacil, piezas, analista, observaciones, fechaDevolucion }) {
     try {
         const respuesta = await fetch('backend/api_expedientes.php', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             credentials: 'include',
-            body: JSON.stringify({ num, asunto, tribunal, oficio, acta, alguacil, piezas, observaciones })
+            body: JSON.stringify({ num, fechaSolicitud, tribunal, oficio, legajo, fechaPrestamo, acta, alguacil, piezas, analista, observaciones, fechaDevolucion })
         });
         return await respuesta.json();
     } catch (error) {
@@ -34,13 +34,13 @@ export async function crearExpediente({ num, asunto, tribunal, oficio, acta, alg
 }
 
 // --- ACTUALIZAR DATOS DE UN EXPEDIENTE EXISTENTE ---
-export async function actualizarExpediente({ num, numOriginal, asunto, tribunal, oficio, acta, alguacil, piezas, observaciones }) {
+export async function actualizarExpediente({ num, numOriginal, fechaSolicitud, tribunal, oficio, legajo, fechaPrestamo, acta, alguacil, piezas, analista, observaciones, fechaDevolucion }) {
     try {
         const respuesta = await fetch('backend/api_expedientes.php', {
             method: 'PUT',
             headers: { 'Content-Type': 'application/json' },
             credentials: 'include',
-            body: JSON.stringify({ num, numOriginal, asunto, tribunal, oficio, acta, alguacil, piezas, observaciones })
+            body: JSON.stringify({ num, numOriginal, fechaSolicitud, tribunal, oficio, legajo, fechaPrestamo, acta, alguacil, piezas, analista, observaciones, fechaDevolucion })
         });
         return await respuesta.json();
     } catch (error) {

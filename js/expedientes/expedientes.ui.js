@@ -12,7 +12,7 @@ export async function renderizarExpedientes() {
     const tbody = document.querySelector("#tabla-expedientes tbody");
     if (!tbody) return;
 
-    tbody.innerHTML = `<tr><td colspan="11" style="text-align:center; padding:20px;">Cargando expedientes...</td></tr>`;
+    tbody.innerHTML = `<tr><td colspan="14" style="text-align:center; padding:20px;">Cargando expedientes...</td></tr>`;
 
     const respuesta = await obtenerExpedientes();
 
@@ -21,7 +21,7 @@ export async function renderizarExpedientes() {
     const expedientes = Array.isArray(respuesta) ? respuesta : [];
 
     if (!Array.isArray(respuesta)) {
-        tbody.innerHTML = `<tr><td colspan="11" style="text-align:center; color:var(--text-muted);">No tiene acceso al módulo de Expedientes.</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="14" style="text-align:center; color:var(--text-muted);">No tiene acceso al módulo de Expedientes.</td></tr>`;
         const contenedorPag = document.getElementById("paginacion-expedientes");
         if (contenedorPag) contenedorPag.remove();
         return;
@@ -39,25 +39,30 @@ export async function renderizarExpedientes() {
     tbody.innerHTML = "";
 
     if (expedientesPagina.length === 0) {
-        tbody.innerHTML = `<tr><td colspan="11" style="text-align:center; color:var(--text-muted);">No hay expedientes en préstamo.</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="14" style="text-align:center; color:var(--text-muted);">No hay expedientes en préstamo.</td></tr>`;
         renderizarControlesPaginacion(expedientes.length);
         return;
     }
 
     expedientesPagina.forEach(exp => {
-        const fecha = exp.fecha_solicitud ? exp.fecha_solicitud.split(' ')[0] : '-';
+        const fechaSolicitud = exp.fecha_solicitud ? exp.fecha_solicitud.split(' ')[0] : '-';
+        const fechaPrestamo = exp.fecha_prestamo ? exp.fecha_prestamo.split(' ')[0] : '-';
+        const fechaDevolucion = exp.fecha_devolucion ? exp.fecha_devolucion.split(' ')[0] : '-';
 
         tbody.innerHTML += `
             <tr>
-                <td><strong>${exp.num_expediente}</strong></td>
-                <td>${exp.asunto}</td>
-                <td>${exp.tribunal}</td>
+                <td>${fechaSolicitud}</td>
                 <td>${exp.numero_oficio}</td>
-                <td>${fecha}</td>
+                <td>${exp.tribunal}</td>
+                <td>${exp.legajo || '-'}</td>
+                <td><strong>${exp.num_expediente}</strong></td>
+                <td>${fechaPrestamo}</td>
                 <td>${exp.acta_remision || '-'}</td>
                 <td>${exp.alguacil || '-'}</td>
                 <td>${exp.num_piezas || '-'}</td>
                 <td>${exp.observaciones || '-'}</td>
+                <td>${exp.analista || '-'}</td>
+                <td>${fechaDevolucion}</td>
                 <td><span class="status-tag status-warning">${exp.estado}</span></td>
                 <td style="text-align:center;">
                     <button class="btn-action btn-edit" onclick="abrirModalExpediente('${exp.num_expediente}')">
@@ -137,13 +142,17 @@ export async function abrirModalExpediente(numExpediente = null) {
 
         if (exp) {
             document.getElementById('e-num').value = exp.num_expediente;
-            document.getElementById('e-asunto').value = exp.asunto;
+            document.getElementById('e-fecha-solicitud').value = exp.fecha_solicitud ? exp.fecha_solicitud.split(' ')[0] : '';
             document.getElementById('e-tribunal').value = exp.tribunal;
             document.getElementById('e-oficio').value = exp.numero_oficio;
+            document.getElementById('e-legajo').value = exp.legajo || '';
+            document.getElementById('e-fecha-prestamo').value = exp.fecha_prestamo ? exp.fecha_prestamo.split(' ')[0] : '';
             document.getElementById('e-acta').value = exp.acta_remision || '';
             document.getElementById('e-alguacil').value = exp.alguacil || '';
             document.getElementById('e-piezas').value = exp.num_piezas || '';
+            document.getElementById('e-analista').value = exp.analista || '';
             document.getElementById('e-observaciones').value = exp.observaciones || '';
+            document.getElementById('e-fecha-devolucion').value = exp.fecha_devolucion ? exp.fecha_devolucion.split(' ')[0] : '';
         }
     } else {
         if (titulo) titulo.innerText = 'Solicitud de Archivo Judicial';

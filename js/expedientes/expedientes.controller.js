@@ -13,13 +13,17 @@ export async function guardarExpediente(e) {
 
     const datosExp = {
         num: document.getElementById('e-num').value.trim().toUpperCase(),
-        asunto: document.getElementById('e-asunto').value.trim(),
+        fechaSolicitud: document.getElementById('e-fecha-solicitud').value,
         tribunal: document.getElementById('e-tribunal').value.trim(),
         oficio: document.getElementById('e-oficio').value.trim().toUpperCase(),
+        legajo: document.getElementById('e-legajo').value.trim().toUpperCase(),
+        fechaPrestamo: document.getElementById('e-fecha-prestamo').value,
         acta: document.getElementById('e-acta').value.trim().toUpperCase(),
         alguacil: document.getElementById('e-alguacil').value.trim(),
         piezas: document.getElementById('e-piezas').value.trim(),
-        observaciones: document.getElementById('e-observaciones').value.trim()
+        analista: document.getElementById('e-analista').value.trim(),
+        observaciones: document.getElementById('e-observaciones').value.trim(),
+        fechaDevolucion: document.getElementById('e-fecha-devolucion').value
     };
 
     let resultado;

@@ -340,21 +340,24 @@
     <div class="table-container">
        <table class="data-table" id="tabla-expedientes">
     <thead>
-        <tr>
-            <th>N° Expediente</th>
-            <th>Carátula / Asunto</th>
-            <th>Tribunal Solicitado</th>
-            <th>Número de Oficio</th>
-            <th>Fecha Solicitud</th>
-            <th>N° de Acta de Remisión</th>
-            <th>Nombre del Alguacil</th>
-            <th>N° de Piezas</th>
-            <th>Observaciones</th>
-            <th>Estado Préstamo</th>
-            <th style="text-align:center; width:100px;">Acciones</th>
-        </tr>
-    </thead>
-    <tbody></tbody>
+    <tr>
+        <th>Fecha Solicitud</th>
+        <th>Número de Oficio</th>
+        <th>Tribunal Solicitado</th>
+        <th>Número de Legajo</th>
+        <th>N° Expediente</th>
+        <th>Fecha de Préstamo</th>
+        <th>N° de Acta de Remisión</th>
+        <th>Nombre del Alguacil</th>
+        <th>N° de Piezas</th>
+        <th>Observaciones</th>
+        <th>Analista que Registró</th>
+        <th>Fecha de Devolución</th>
+        <th>Estado Préstamo</th>
+        <th style="text-align:center; width:100px;">Acciones</th>
+    </tr>
+</thead>
+<tbody></tbody>
 </table>
         <div id="paginacion-expedientes" class="paginacion-reportes" style="margin-top: 15px;"></div>
     </div>
@@ -366,58 +369,83 @@
         <h3 class="modal-title">Solicitud de Archivo Judicial</h3>
 
          <form id="formExpediente" onsubmit="guardarExpediente(event)">
-            <input type="hidden" id="e-index">
-            <div class="form-grid">
-                <div class="form-group">
-                    <label>N° de Expediente</label>
-                    <input type="text" id="e-num" placeholder="Ej. EXP-2026-001" required>
-                </div>
+    <input type="hidden" id="e-index">
 
-                <div class="form-group">
-                    <label>Carátula / Asunto</label>
-                    <input type="text" id="e-asunto" placeholder="Ej. Pérez vs. López" required>
-                </div>
-            </div>
+    <div class="form-grid">
+        <div class="form-group">
+            <label>Fecha de Recepción de la Solicitud</label>
+            <input type="date" id="e-fecha-solicitud" required>
+        </div>
 
-            <div class="form-grid">
-                <div class="form-group">
-                    <label>Tribunal Solicitado</label>
-                    <input type="text" id="e-tribunal" placeholder="Ej. Tribunal Primero de Mediación" required>
-                </div>
+        <div class="form-group">
+            <label>Número de Oficio</label>
+            <input type="text" id="e-oficio" placeholder="Ej. OFI-2026-884" required>
+        </div>
+    </div>
 
-                <div class="form-group">
-                    <label>Número de Oficio</label>
-                    <input type="text" id="e-oficio" placeholder="Ej. OFI-2026-884" required>
-                </div>
-            </div>
+    <div class="form-grid">
+        <div class="form-group">
+            <label>Tribunal Solicitante</label>
+            <input type="text" id="e-tribunal" placeholder="Ej. Tribunal Primero de Mediación" required>
+        </div>
 
-            <div class="form-grid">
-                <div class="form-group">
-                    <label>N° de Acta de Remisión</label>
-                    <input type="text" id="e-acta" placeholder="Ej. ACTA-2026-045" required>
-                </div>
+        <div class="form-group">
+            <label>Número de Legajo</label>
+            <input type="text" id="e-legajo" placeholder="Ej. LEG-2026-014" required>
+        </div>
+    </div>
 
-                <div class="form-group">
-                    <label>Nombre del Alguacil</label>
-                    <input type="text" id="e-alguacil" placeholder="Ej. Juan Pérez" required>
-                </div>
-            </div>
+    <div class="form-grid">
+        <div class="form-group">
+            <label>N° de Expediente</label>
+            <input type="text" id="e-num" placeholder="Ej. EXP-2026-001" required>
+        </div>
 
-            <div class="form-group">
-                <label>N° de Piezas</label>
-                <input type="number" id="e-piezas" placeholder="Ej. 1" min="1" required>
-            </div>
+        <div class="form-group">
+            <label>Fecha de Préstamo</label>
+            <input type="date" id="e-fecha-prestamo" required>
+        </div>
+    </div>
 
-            <div class="form-group">
-                <label>Observaciones</label>
-                <textarea id="e-observaciones" rows="3" placeholder="Observaciones adicionales (opcional)"></textarea>
-            </div>
+    <div class="form-grid">
+        <div class="form-group">
+            <label>N° de Acta de Remisión</label>
+            <input type="text" id="e-acta" placeholder="Ej. ACTA-2026-045" required>
+        </div>
 
-            <div class="modal-footer" style="display:flex; gap:10px; margin-top:25px;">
-                <button type="submit" class="btn-primary-lg" style="flex:1;">Registrar Préstamo</button>
-                <button type="button" class="btn-primary-lg" onclick="cerrarModalExpediente()" style="flex:1; background:#3b3b3d;">Cerrar</button>
-            </div>
-        </form>
+        <div class="form-group">
+            <label>Nombre del Alguacil</label>
+            <input type="text" id="e-alguacil" placeholder="Ej. Juan Pérez" required>
+        </div>
+    </div>
+
+    <div class="form-grid">
+        <div class="form-group">
+            <label>N° de Piezas</label>
+            <input type="number" id="e-piezas" placeholder="Ej. 1" min="1" required>
+        </div>
+
+        <div class="form-group">
+            <label>Nombre del Analista que Registró</label>
+            <input type="text" id="e-analista" placeholder="Ej. María Gómez" required>
+        </div>
+    </div>
+
+    <div class="form-group">
+        <label>Observaciones</label>
+        <textarea id="e-observaciones" rows="3" placeholder="Observaciones adicionales (opcional)"></textarea>
+    </div>
+
+    <div class="form-group">
+        <label>Fecha de Devolución</label>
+        <input type="date" id="e-fecha-devolucion">
+    </div>
+
+    <div class="modal-footer" style="display:flex; gap:10px; margin-top:25px;">
+        <button type="submit" class="btn-primary-lg" style="flex:1;">Registrar Préstamo</button>
+        <button type="button" class="btn-primary-lg" onclick="cerrarModalExpediente()" style="flex:1; background:#3b3b3d;">Cerrar</button>
+    </div>
+</form>
     </div>
 </div>
 
