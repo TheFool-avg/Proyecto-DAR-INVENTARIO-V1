@@ -62,15 +62,20 @@ if ($method == 'POST') {
     }
 
     $num = $conexion->real_escape_string(trim($data['num'] ?? ''));
-    $asunto = $conexion->real_escape_string(trim($data['asunto'] ?? ''));
+    $fechaSolicitud = $conexion->real_escape_string(trim($data['fechaSolicitud'] ?? ''));
     $tribunal = $conexion->real_escape_string(trim($data['tribunal'] ?? ''));
     $oficio = $conexion->real_escape_string(trim($data['oficio'] ?? ''));
+    $legajo = $conexion->real_escape_string(trim($data['legajo'] ?? ''));
+    $fechaPrestamo = $conexion->real_escape_string(trim($data['fechaPrestamo'] ?? ''));
     $acta = $conexion->real_escape_string(trim($data['acta'] ?? ''));
     $alguacil = $conexion->real_escape_string(trim($data['alguacil'] ?? ''));
     $piezas = intval($data['piezas'] ?? 0);
+    $analista = $conexion->real_escape_string(trim($data['analista'] ?? ''));
     $observaciones = $conexion->real_escape_string(trim($data['observaciones'] ?? ''));
+    $fechaDevolucion = trim($data['fechaDevolucion'] ?? '');
+    $fechaDevolucionSQL = $fechaDevolucion === '' ? 'NULL' : "'" . $conexion->real_escape_string($fechaDevolucion) . "'";
 
-    if ($num === '' || $asunto === '' || $tribunal === '' || $oficio === '') {
+    if ($num === '' || $fechaSolicitud === '' || $tribunal === '' || $oficio === '' || $legajo === '' || $fechaPrestamo === '' || $acta === '' || $alguacil === '' || $analista === '') {
         echo json_encode(["success" => false, "error" => "Faltan campos obligatorios"]);
         exit;
     }
@@ -85,8 +90,8 @@ if ($method == 'POST') {
     $depServJud = $conexion->query("SELECT id FROM departamentos WHERE nombre = 'Servicios Judiciales'");
     $depId = $depServJud && $depServJud->num_rows > 0 ? intval($depServJud->fetch_assoc()['id']) : 'NULL';
 
-    $sql = "INSERT INTO expedientes (num_expediente, asunto, tribunal, numero_oficio, acta_remision, alguacil, num_piezas, observaciones, estado, departamento_id) 
-            VALUES ('$num', '$asunto', '$tribunal', '$oficio', '$acta', '$alguacil', '$piezas', '$observaciones', 'En Préstamo', $depId)";
+    $sql = "INSERT INTO expedientes (num_expediente, fecha_solicitud, tribunal, numero_oficio, legajo, fecha_prestamo, acta_remision, alguacil, num_piezas, analista, observaciones, fecha_devolucion, estado, departamento_id) 
+            VALUES ('$num', '$fechaSolicitud', '$tribunal', '$oficio', '$legajo', '$fechaPrestamo', '$acta', '$alguacil', '$piezas', '$analista', '$observaciones', $fechaDevolucionSQL, 'En Préstamo', $depId)";
 
     if ($conexion->query($sql) === TRUE) {
         echo json_encode(["success" => true, "mensaje" => "Préstamo de expediente registrado correctamente"]);
@@ -129,23 +134,32 @@ if ($method == 'PUT') {
     }
 
     // --- CASO 2: ACTUALIZACIÓN NORMAL DE DATOS ---
-    $asunto = $conexion->real_escape_string(trim($data['asunto'] ?? ''));
+    $fechaSolicitud = $conexion->real_escape_string(trim($data['fechaSolicitud'] ?? ''));
     $tribunal = $conexion->real_escape_string(trim($data['tribunal'] ?? ''));
     $oficio = $conexion->real_escape_string(trim($data['oficio'] ?? ''));
+    $legajo = $conexion->real_escape_string(trim($data['legajo'] ?? ''));
+    $fechaPrestamo = $conexion->real_escape_string(trim($data['fechaPrestamo'] ?? ''));
     $acta = $conexion->real_escape_string(trim($data['acta'] ?? ''));
     $alguacil = $conexion->real_escape_string(trim($data['alguacil'] ?? ''));
     $piezas = intval($data['piezas'] ?? 0);
+    $analista = $conexion->real_escape_string(trim($data['analista'] ?? ''));
     $observaciones = $conexion->real_escape_string(trim($data['observaciones'] ?? ''));
+    $fechaDevolucion = trim($data['fechaDevolucion'] ?? '');
+    $fechaDevolucionSQL = $fechaDevolucion === '' ? 'NULL' : "'" . $conexion->real_escape_string($fechaDevolucion) . "'";
 
     $sql = "UPDATE expedientes SET 
             num_expediente = '$num',
-            asunto = '$asunto', 
+            fecha_solicitud = '$fechaSolicitud',
             tribunal = '$tribunal', 
             numero_oficio = '$oficio', 
+            legajo = '$legajo',
+            fecha_prestamo = '$fechaPrestamo',
             acta_remision = '$acta', 
             alguacil = '$alguacil', 
             num_piezas = '$piezas', 
-            observaciones = '$observaciones'
+            analista = '$analista',
+            observaciones = '$observaciones',
+            fecha_devolucion = $fechaDevolucionSQL
             WHERE num_expediente = '$numOriginal'";
 
     if ($conexion->query($sql) === TRUE) {
