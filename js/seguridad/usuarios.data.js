@@ -14,13 +14,13 @@ export async function obtenerUsuarios() {
 }
 
 // --- CREAR NUEVO USUARIO ---
-export async function crearUsuario({ nombre, correo, nivel, clave }) {
+export async function crearUsuario({ nombre, usuario, nivel, clave }) {
     try {
         const respuesta = await fetch('backend/api_usuarios.php', {
             method: 'POST',
             credentials: 'include',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ nombre, correo, nivel, clave })
+            body: JSON.stringify({ nombre, usuario, nivel, clave })
         });
         return await respuesta.json();
     } catch (error) {
@@ -30,13 +30,13 @@ export async function crearUsuario({ nombre, correo, nivel, clave }) {
 }
 
 // --- EDITAR USUARIO EXISTENTE (clave vacía = se conserva la actual) ---
-export async function actualizarUsuario({ correo, nombre, nivel, clave }) {
+export async function actualizarUsuario({ usuario, nombre, nivel, clave }) {
     try {
         const respuesta = await fetch('backend/api_usuarios.php', {
             method: 'PUT',
             credentials: 'include',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ correo, nombre, nivel, clave })
+            body: JSON.stringify({ usuario, nombre, nivel, clave })
         });
         return await respuesta.json();
     } catch (error) {
@@ -46,13 +46,13 @@ export async function actualizarUsuario({ correo, nombre, nivel, clave }) {
 }
 
 // --- ELIMINAR USUARIO ---
-export async function eliminarUsuarioAPI(correo) {
+export async function eliminarUsuarioAPI(usuario) {
     try {
         const respuesta = await fetch('backend/api_usuarios.php', {
             method: 'DELETE',
             credentials: 'include',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ correo })
+            body: JSON.stringify({ usuario })
         });
         return await respuesta.json();
     } catch (error) {

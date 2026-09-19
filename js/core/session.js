@@ -1,8 +1,8 @@
 // js/core/session.js
 
-export const USER_DEPTO = sessionStorage.getItem('user_depto') || 'todos';
-export const USER_EMAIL = sessionStorage.getItem('user_email') || 'analista@dar.gob.ve';
-export const USER_NAME  = sessionStorage.getItem('user_name')  || 'Usuario Analista';
+export const USER_DEPTO   = sessionStorage.getItem('user_depto') || 'todos';
+export const USER_USUARIO = sessionStorage.getItem('user_usuario') || 'analista';
+export const USER_NAME    = sessionStorage.getItem('user_name')  || 'Usuario Analista';
 
 export async function logout() {
     try {

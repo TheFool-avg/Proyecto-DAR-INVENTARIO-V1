@@ -1,9 +1,9 @@
 // --- LOGICA DE AUTENTICACIÓN (LOGIN) ---
 async function entrar() {
-    const correo = document.getElementById('u_correo').value.trim().toLowerCase();
+    const usuario = document.getElementById('u_usuario').value.trim().toLowerCase();
     const clave = document.getElementById('u_clave').value;
 
-    if (!correo || !clave) {
+    if (!usuario || !clave) {
         mostrarNotificacion("Por favor, introduzca sus credenciales.", "error");
         return;
     }
@@ -12,21 +12,21 @@ async function entrar() {
         const respuesta = await fetch('backend/api_login.php', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ correo, clave })
+            body: JSON.stringify({ usuario, clave })
         });
 
         const resultado = await respuesta.json();
 
         if (resultado.success) {
             sessionStorage.setItem('sesion_activa', 'true');
-            sessionStorage.setItem('user_email', resultado.correo);
+            sessionStorage.setItem('user_usuario', resultado.usuario);
             sessionStorage.setItem('user_name', resultado.nombre);
             sessionStorage.setItem('user_depto', resultado.nivel);
 
             mostrarNotificacion("Acceso concedido. Redirigiendo...", "success");
             setTimeout(() => { window.location.href = "sistema.html"; }, 1200);
         } else {
-            mostrarNotificacion(resultado.error || "Correo electrónico o contraseña incorrectos.", "error");
+            mostrarNotificacion(resultado.error || "Usuario o contraseña incorrectos.", "error");
         }
     } catch (error) {
         console.error("Error de conexión con el servidor:", error);

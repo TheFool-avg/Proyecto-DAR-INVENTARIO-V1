@@ -5,7 +5,7 @@
 include 'auth_check.php';
 header('Content-Type: application/json; charset=utf-8');
 
-if (!isset($_SESSION['correo'])) {
+if (!isset($_SESSION['usuario'])) {
     http_response_code(401);
     echo json_encode(["success" => false, "error" => "No hay sesión activa"]);
     exit;
@@ -13,7 +13,7 @@ if (!isset($_SESSION['correo'])) {
 
 echo json_encode([
     "success" => true,
-    "correo"  => $_SESSION['correo'],
+    "usuario" => $_SESSION['usuario'],
     "nombre"  => $_SESSION['nombre'],
     "nivel"   => $_SESSION['nivel']
 ]);

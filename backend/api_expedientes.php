@@ -5,31 +5,31 @@ header('Content-Type: application/json; charset=utf-8');
 
 $method = $_SERVER['REQUEST_METHOD'];
 
-// El correo YA NO se lee del cliente (GET/body) — se obtiene de la sesión
+// El usuario YA NO se lee del cliente (GET/body) — se obtiene de la sesión
 // del servidor, que no puede ser falsificada desde la consola del navegador.
 $usuarioActual = requerirSesion(); // corta con 401 si no hay sesión activa
 
 // --- VALIDAR QUE EL USUARIO PERTENEZCA A SERVICIOS JUDICIALES (O SEA ADMIN) ---
-function usuarioAutorizado($conexion, $correo) {
-    if (empty($correo)) return false;
+function usuarioAutorizado($conexion, $usuario) {
+    if (empty($usuario)) return false;
 
-    $correoEscapado = $conexion->real_escape_string($correo);
+    $usuarioEscapado = $conexion->real_escape_string($usuario);
     $sql = "SELECT u.departamento_id, 
                    CASE WHEN u.departamento_id IS NULL THEN 'todos' ELSE d.nombre END AS nivel
             FROM usuarios u
             LEFT JOIN departamentos d ON u.departamento_id = d.id
-            WHERE u.correo = '$correoEscapado'";
+            WHERE u.usuario = '$usuarioEscapado'";
 
     $resultado = $conexion->query($sql);
     if (!$resultado || $resultado->num_rows === 0) return false;
 
-    $usuario = $resultado->fetch_assoc();
-    return $usuario['nivel'] === 'todos' || $usuario['nivel'] === 'Servicios Judiciales';
+    $fila = $resultado->fetch_assoc();
+    return $fila['nivel'] === 'todos' || $fila['nivel'] === 'Servicios Judiciales';
 }
 
 // --- GET: OBTENER EXPEDIENTES ---
 if ($method == 'GET') {
-    if (!usuarioAutorizado($conexion, $usuarioActual['correo'])) {
+    if (!usuarioAutorizado($conexion, $usuarioActual['usuario'])) {
         http_response_code(403);
         echo json_encode(["success" => false, "error" => "No tiene permisos para acceder a Expedientes"]);
         exit;
@@ -55,7 +55,7 @@ if ($method == 'GET') {
 if ($method == 'POST') {
     $data = json_decode(file_get_contents("php://input"), true);
 
-    if (!$data || !usuarioAutorizado($conexion, $usuarioActual['correo'])) {
+    if (!$data || !usuarioAutorizado($conexion, $usuarioActual['usuario'])) {
         http_response_code(403);
         echo json_encode(["success" => false, "error" => "No tiene permisos para gestionar Expedientes"]);
         exit;
@@ -106,7 +106,7 @@ if ($method == 'POST') {
 if ($method == 'PUT') {
     $data = json_decode(file_get_contents("php://input"), true);
 
-    if (!$data || !usuarioAutorizado($conexion, $usuarioActual['correo'])) {
+    if (!$data || !usuarioAutorizado($conexion, $usuarioActual['usuario'])) {
         http_response_code(403);
         echo json_encode(["success" => false, "error" => "No tiene permisos para gestionar Expedientes"]);
         exit;
@@ -175,7 +175,7 @@ if ($method == 'PUT') {
 if ($method == 'DELETE') {
     $data = json_decode(file_get_contents("php://input"), true);
 
-    if (!$data || !usuarioAutorizado($conexion, $usuarioActual['correo'])) {
+    if (!$data || !usuarioAutorizado($conexion, $usuarioActual['usuario'])) {
         http_response_code(403);
         echo json_encode(["success" => false, "error" => "No tiene permisos para gestionar Expedientes"]);
         exit;

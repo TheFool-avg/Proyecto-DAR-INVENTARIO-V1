@@ -30,8 +30,8 @@ export function cambiarPaginaUsuarios(n) {
 /* ============================================================
    ABRIR / CERRAR MODAL
 ============================================================ */
-export async function abrirModalUsuario(correo = null) {
-    usuarioEditando = correo;
+export async function abrirModalUsuario(usuario = null) {
+    usuarioEditando = usuario;
 
     const modal = document.getElementById('modalUsuario');
     const form = document.getElementById('formUsuario');
@@ -42,15 +42,15 @@ export async function abrirModalUsuario(correo = null) {
     form.reset();
     await poblarSelectDepartamentos(selectNivel);
 
-    if (correo) {
+    if (usuario) {
         if (titulo) titulo.innerText = "Modificar Usuario";
 
         const usuarios = await obtenerUsuarios();
-        const u = usuarios.find(us => us.correo === correo);
+        const u = usuarios.find(us => us.usuario === usuario);
 
         if (u) {
             document.getElementById('u-nombre').value = u.nombre;
-            document.getElementById('u-correo').value = u.correo;
+            document.getElementById('u-usuario').value = u.usuario;
             document.getElementById('u-nivel').value = u.nivel;
         }
 
@@ -58,14 +58,14 @@ export async function abrirModalUsuario(correo = null) {
         inputPass.placeholder = 'Dejar en blanco para mantener la contraseña actual';
         inputPass.removeAttribute('required');
 
-        document.getElementById('u-correo').setAttribute('disabled', 'true');
+        document.getElementById('u-usuario').setAttribute('disabled', 'true');
     } else {
         if (titulo) titulo.innerText = "Registrar Nuevo Usuario";
 
         inputPass.value = '';
         inputPass.placeholder = '';
         inputPass.setAttribute('required', 'true');
-        document.getElementById('u-correo').removeAttribute('disabled');
+        document.getElementById('u-usuario').removeAttribute('disabled');
     }
 
     modal.style.display = 'flex';
@@ -82,7 +82,7 @@ export async function guardarUsuario(e) {
     e.preventDefault();
 
     const nombreCompleto = document.getElementById('u-nombre').value.trim();
-    const correo = document.getElementById('u-correo').value.trim().toLowerCase();
+    const usuario = document.getElementById('u-usuario').value.trim().toLowerCase();
     const nivel = document.getElementById('u-nivel').value;
     const clave = document.getElementById('u-pass').value;
 
@@ -107,8 +107,8 @@ export async function guardarUsuario(e) {
         return;
     }
 
-    const usuarioActual = sessionStorage.getItem("user_email");
-    const editandoAMiMismo = usuarioEditando && usuarioActual === correo;
+    const usuarioActual = sessionStorage.getItem("user_usuario");
+    const editandoAMiMismo = usuarioEditando && usuarioActual === usuario;
 
     // ============================================================
     // 🔐 BLOQUEO 1: Un administrador NO puede bajarse el nivel
@@ -132,13 +132,13 @@ export async function guardarUsuario(e) {
     let resultado;
 
     if (usuarioEditando) {
-        resultado = await actualizarUsuario({ correo, nombre: nombreCompleto, nivel, clave });
+        resultado = await actualizarUsuario({ usuario, nombre: nombreCompleto, nivel, clave });
     } else {
         if (clave === '') {
             lanzarToast('Debe indicar una contraseña para el nuevo usuario.', 'danger');
             return;
         }
-        resultado = await crearUsuario({ nombre: nombreCompleto, correo, nivel, clave });
+        resultado = await crearUsuario({ nombre: nombreCompleto, usuario, nivel, clave });
     }
 
     if (!resultado.success) {
@@ -147,8 +147,8 @@ export async function guardarUsuario(e) {
     }
 
     registrarLog("seguridad", usuarioEditando ?
-        `Modificó usuario ${correo}` :
-        `Registró nuevo usuario ${correo}`
+        `Modificó usuario ${usuario}` :
+        `Registró nuevo usuario ${usuario}`
     );
 
     const eraEdicion = usuarioEditando !== null;
@@ -189,25 +189,25 @@ async function poblarSelectDepartamentos(selectNivel) {
 /* ============================================================
    ELIMINAR USUARIO
 ============================================================ */
-export async function eliminarUsuario(correo) {
+export async function eliminarUsuario(usuario) {
 
-    const usuarioActual = sessionStorage.getItem("user_email");
+    const usuarioActual = sessionStorage.getItem("user_usuario");
 
-    if (correo === usuarioActual) {
+    if (usuario === usuarioActual) {
         lanzarToast("No puedes eliminar tu propio usuario.", "danger");
         return;
     }
 
-    if (!confirm(`¿Eliminar al usuario ${correo}?`)) return;
+    if (!confirm(`¿Eliminar al usuario ${usuario}?`)) return;
 
-    const resultado = await eliminarUsuarioAPI(correo);
+    const resultado = await eliminarUsuarioAPI(usuario);
 
     if (!resultado.success) {
         lanzarToast(resultado.error || 'No se pudo eliminar el usuario.', 'danger');
         return;
     }
 
-    registrarLog("seguridad", `Eliminó usuario ${correo}`);
+    registrarLog("seguridad", `Eliminó usuario ${usuario}`);
 
     // 🔥 Mantener la página actual
     await renderizarUsuarios();

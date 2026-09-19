@@ -9,15 +9,15 @@ export async function guardarPerfil(e) {
     e.preventDefault();
 
     const nombre = document.getElementById('p-nombre').value.trim();
-    const correo = sessionStorage.getItem('user_email');
+    const usuario = sessionStorage.getItem('user_usuario');
 
-    if (!nombre || !correo) {
+    if (!nombre || !usuario) {
         document.getElementById('modalPerfil').style.display = 'none';
         return;
     }
 
     const resultado = await actualizarUsuario({
-        correo,
+        usuario,
         nombre,
         nivel: USER_DEPTO,
         clave: ''
@@ -39,17 +39,17 @@ export async function guardarPerfil(e) {
 
 // --- CARGAR PERFIL ---
 export async function cargarPerfil() {
-    const correo = sessionStorage.getItem('user_email');
+    const usuario = sessionStorage.getItem('user_usuario');
     const cargoCalculado = USER_DEPTO === 'todos'
         ? 'Administrador General'
         : `Analista de ${USER_DEPTO}`;
 
-    if (!correo) {
+    if (!usuario) {
         return { nombre: USER_NAME, cargo: cargoCalculado };
     }
 
     const usuarios = await obtenerUsuarios();
-    const u = usuarios.find(us => us.correo === correo);
+    const u = usuarios.find(us => us.usuario === usuario);
 
     if (!u) {
         return { nombre: USER_NAME, cargo: cargoCalculado };

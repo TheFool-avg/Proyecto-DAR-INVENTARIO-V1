@@ -195,7 +195,7 @@ async function verificarSesionYArrancar() {
         // Sesión confirmada por el servidor: sincronizamos sessionStorage
         // (solo para que la UI muestre nombre/rol) y arrancamos la app.
         const datos = await respuesta.json();
-        sessionStorage.setItem('user_email', datos.correo);
+        sessionStorage.setItem('user_usuario', datos.usuario);
         sessionStorage.setItem('user_name', datos.nombre);
         sessionStorage.setItem('user_depto', datos.nivel);
 

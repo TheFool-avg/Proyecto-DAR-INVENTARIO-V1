@@ -34,19 +34,19 @@ export async function renderizarUsuarios() {
         return;
     }
 
-    const usuarioActual = sessionStorage.getItem("user_email");
+    const usuarioActual = sessionStorage.getItem("user_usuario");
 
     lista.forEach(u => {
         let botones = "";
 
         // Bloquear edición y eliminación del propio usuario
-        if (u.correo !== usuarioActual) {
+        if (u.usuario !== usuarioActual) {
             botones = `
-                <button class="btn-action btn-edit" onclick="abrirModalUsuario('${u.correo}')">
+                <button class="btn-action btn-edit" onclick="abrirModalUsuario('${u.usuario}')">
                     <i class="fas fa-edit"></i>
                 </button>
 
-                <button class="btn-action btn-delete" onclick="eliminarUsuario('${u.correo}')">
+                <button class="btn-action btn-delete" onclick="eliminarUsuario('${u.usuario}')">
                     <i class="fas fa-trash"></i>
                 </button>
             `;
@@ -61,7 +61,7 @@ export async function renderizarUsuarios() {
         tbody.innerHTML += `
             <tr>
                 <td>${u.nombre}</td>
-                <td>${u.correo}</td>
+                <td>${u.usuario}</td>
                 <td>${u.nivel}</td>
                 <td style="text-align:center;">${botones}</td>
             </tr>

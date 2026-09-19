@@ -7,16 +7,16 @@
 session_start();
 
 function requerirSesion() {
-    if (!isset($_SESSION['correo'])) {
+    if (!isset($_SESSION['usuario'])) {
         http_response_code(401);
         echo json_encode(["success" => false, "error" => "No hay sesión activa. Inicie sesión nuevamente."]);
         exit;
     }
 
     return [
-        "correo" => $_SESSION['correo'],
-        "nombre" => $_SESSION['nombre'],
-        "nivel"  => $_SESSION['nivel']
+        "usuario" => $_SESSION['usuario'],
+        "nombre"  => $_SESSION['nombre'],
+        "nivel"   => $_SESSION['nivel']
     ];
 }
 ?>

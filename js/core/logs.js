@@ -1,5 +1,5 @@
 // js/core/logs.js
-import { USER_NAME, USER_EMAIL } from './session.js';
+import { USER_NAME, USER_USUARIO } from './session.js';
 
 /* ============================
    PAGINACIÓN AUDITORÍA (ahora resuelta en el backend)
@@ -58,7 +58,7 @@ export async function registrarLog(operacion, descripcion) {
             credentials: 'include',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
-                usuario: `${USER_NAME} (${USER_EMAIL})`,
+                usuario: `${USER_NAME} (${USER_USUARIO})`,
                 operacion,
                 descripcion
             })

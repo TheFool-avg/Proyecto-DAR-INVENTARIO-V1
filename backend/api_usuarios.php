@@ -9,7 +9,7 @@ $method = $_SERVER['REQUEST_METHOD'];
 
 // --- GET: OBTENER TODOS LOS USUARIOS (nivel calculado en vivo desde departamentos) ---
 if ($method == 'GET') {
-    $sql = "SELECT u.id, u.nombre, u.correo, u.departamento_id,
+    $sql = "SELECT u.id, u.nombre, u.usuario, u.departamento_id,
                    CASE WHEN u.departamento_id IS NULL THEN 'todos' ELSE d.nombre END AS nivel
             FROM usuarios u
             LEFT JOIN departamentos d ON u.departamento_id = d.id
@@ -35,21 +35,21 @@ if ($method == 'POST') {
 
     $data = json_decode(file_get_contents("php://input"), true);
 
-    $nombre = trim($data['nombre'] ?? '');
-    $correo = strtolower(trim($data['correo'] ?? ''));
-    $nivel  = trim($data['nivel'] ?? '');
-    $clave  = $data['clave'] ?? '';
+    $nombre  = trim($data['nombre'] ?? '');
+    $usuario = strtolower(trim($data['usuario'] ?? ''));
+    $nivel   = trim($data['nivel'] ?? '');
+    $clave   = $data['clave'] ?? '';
 
-    if ($nombre === '' || $correo === '' || $nivel === '' || $clave === '') {
+    if ($nombre === '' || $usuario === '' || $nivel === '' || $clave === '') {
         echo json_encode(["success" => false, "error" => "Todos los campos son obligatorios"]);
         exit;
     }
 
-    $correoEscapado = $conexion->real_escape_string($correo);
-    $check = $conexion->query("SELECT id FROM usuarios WHERE correo = '$correoEscapado'");
+    $usuarioEscapado = $conexion->real_escape_string($usuario);
+    $check = $conexion->query("SELECT id FROM usuarios WHERE usuario = '$usuarioEscapado'");
 
     if ($check && $check->num_rows > 0) {
-        echo json_encode(["success" => false, "error" => "El correo ya está registrado"]);
+        echo json_encode(["success" => false, "error" => "El usuario ya está registrado"]);
         exit;
     }
 
@@ -70,8 +70,8 @@ if ($method == 'POST') {
     $hash           = password_hash($clave, PASSWORD_DEFAULT);
     $depIdSql       = $departamentoId === null ? "NULL" : $departamentoId;
 
-    $sql = "INSERT INTO usuarios (nombre, correo, nivel, departamento_id, pass)
-            VALUES ('$nombreEscapado', '$correoEscapado', '$nivelEscapado', $depIdSql, '$hash')";
+    $sql = "INSERT INTO usuarios (nombre, usuario, nivel, departamento_id, pass)
+            VALUES ('$nombreEscapado', '$usuarioEscapado', '$nivelEscapado', $depIdSql, '$hash')";
 
     if ($conexion->query($sql) === TRUE) {
         echo json_encode(["success" => true, "mensaje" => "Usuario registrado correctamente"]);
@@ -92,12 +92,12 @@ if ($method == 'PUT') {
 
     $data = json_decode(file_get_contents("php://input"), true);
 
-    $correo = strtolower(trim($data['correo'] ?? ''));
-    $nombre = trim($data['nombre'] ?? '');
-    $nivel  = trim($data['nivel'] ?? '');
-    $clave  = $data['clave'] ?? '';
+    $usuario = strtolower(trim($data['usuario'] ?? ''));
+    $nombre  = trim($data['nombre'] ?? '');
+    $nivel   = trim($data['nivel'] ?? '');
+    $clave   = $data['clave'] ?? '';
 
-    if ($correo === '' || $nombre === '' || $nivel === '') {
+    if ($usuario === '' || $nombre === '' || $nivel === '') {
         echo json_encode(["success" => false, "error" => "Datos incompletos para actualizar"]);
         exit;
     }
@@ -115,15 +115,15 @@ if ($method == 'PUT') {
         $departamentoId = intval($resDep->fetch_assoc()['id']);
     }
 
-    $correoEscapado = $conexion->real_escape_string($correo);
-    $nombreEscapado = $conexion->real_escape_string($nombre);
-    $depIdSql       = $departamentoId === null ? "NULL" : $departamentoId;
+    $usuarioEscapado = $conexion->real_escape_string($usuario);
+    $nombreEscapado  = $conexion->real_escape_string($nombre);
+    $depIdSql        = $departamentoId === null ? "NULL" : $departamentoId;
 
     if ($clave !== '') {
         $hash = password_hash($clave, PASSWORD_DEFAULT);
-        $sql = "UPDATE usuarios SET nombre = '$nombreEscapado', nivel = '$nivelEscapado', departamento_id = $depIdSql, pass = '$hash' WHERE correo = '$correoEscapado'";
+        $sql = "UPDATE usuarios SET nombre = '$nombreEscapado', nivel = '$nivelEscapado', departamento_id = $depIdSql, pass = '$hash' WHERE usuario = '$usuarioEscapado'";
     } else {
-        $sql = "UPDATE usuarios SET nombre = '$nombreEscapado', nivel = '$nivelEscapado', departamento_id = $depIdSql WHERE correo = '$correoEscapado'";
+        $sql = "UPDATE usuarios SET nombre = '$nombreEscapado', nivel = '$nivelEscapado', departamento_id = $depIdSql WHERE usuario = '$usuarioEscapado'";
     }
 
     if ($conexion->query($sql) === TRUE) {
@@ -145,15 +145,15 @@ if ($method == 'DELETE') {
 
     $data = json_decode(file_get_contents("php://input"), true);
 
-    $correo = strtolower(trim($data['correo'] ?? ''));
+    $usuario = strtolower(trim($data['usuario'] ?? ''));
 
-    if ($correo === '') {
+    if ($usuario === '') {
         echo json_encode(["success" => false, "error" => "No se especificó el usuario a eliminar"]);
         exit;
     }
 
-    $correoEscapado = $conexion->real_escape_string($correo);
-    $sql = "DELETE FROM usuarios WHERE correo = '$correoEscapado'";
+    $usuarioEscapado = $conexion->real_escape_string($usuario);
+    $sql = "DELETE FROM usuarios WHERE usuario = '$usuarioEscapado'";
 
     if ($conexion->query($sql) === TRUE) {
         echo json_encode(["success" => true, "mensaje" => "Usuario eliminado correctamente"]);
