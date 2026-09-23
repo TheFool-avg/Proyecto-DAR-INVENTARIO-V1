@@ -213,3 +213,14 @@ export async function eliminarUsuario(usuario) {
     await renderizarUsuarios();
     lanzarToast("Usuario eliminado.", "success");
 }
+
+// --- MANEJO EXTRA: VISIBILIDAD DE CONTRASEÑA EN EL MODAL DE USUARIOS ---
+const toggleUserPass = document.getElementById('toggleUserPass');
+const inputUserPass = document.getElementById('u-pass');
+if (toggleUserPass && inputUserPass) {
+    toggleUserPass.addEventListener('click', function () {
+        const type = inputUserPass.getAttribute('type') === 'password' ? 'text' : 'password';
+        inputUserPass.setAttribute('type', type);
+        this.classList.toggle('fa-eye-slash');
+    });
+}

@@ -14,7 +14,7 @@ export async function renderizarExpedientes() {
 
     tbody.innerHTML = `<tr><td colspan="14" style="text-align:center; padding:20px;">Cargando expedientes...</td></tr>`;
 
-    const respuesta = await obtenerExpedientes();
+    const respuesta = await obtenerExpedientes('historial');
 
     // Si el backend rechazó la petición (no autorizado) o devolvió un objeto de error,
     // no intentamos paginar nada: mostramos la tabla vacía silenciosamente.
@@ -39,7 +39,7 @@ export async function renderizarExpedientes() {
     tbody.innerHTML = "";
 
     if (expedientesPagina.length === 0) {
-        tbody.innerHTML = `<tr><td colspan="14" style="text-align:center; color:var(--text-muted);">No hay expedientes en préstamo.</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="14" style="text-align:center; color:var(--text-muted);">No hay expedientes registrados.</td></tr>`;
         renderizarControlesPaginacion(expedientes.length);
         return;
     }
@@ -48,6 +48,7 @@ export async function renderizarExpedientes() {
         const fechaSolicitud = exp.fecha_solicitud ? exp.fecha_solicitud.split(' ')[0] : '-';
         const fechaPrestamo = exp.fecha_prestamo ? exp.fecha_prestamo.split(' ')[0] : '-';
         const fechaDevolucion = exp.fecha_devolucion ? exp.fecha_devolucion.split(' ')[0] : '-';
+        const claseEstado = exp.estado === 'Devuelto' ? 'status-success' : 'status-warning';
 
         tbody.innerHTML += `
             <tr>
@@ -63,7 +64,7 @@ export async function renderizarExpedientes() {
                 <td>${exp.observaciones || '-'}</td>
                 <td>${exp.analista || '-'}</td>
                 <td>${fechaDevolucion}</td>
-                <td><span class="status-tag status-warning">${exp.estado}</span></td>
+                <td><span class="status-tag ${claseEstado}">${exp.estado}</span></td>
                 <td style="text-align:center;">
                     <button class="btn-action btn-edit" onclick="abrirModalExpediente('${exp.num_expediente}')">
                         <i class="fas fa-edit"></i>

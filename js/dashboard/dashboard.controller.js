@@ -4,6 +4,7 @@ import { USER_DEPTO } from '../core/session.js';
 import { aplicarCambiosPerfilUI } from '../perfil/perfil.ui.js';
 import { renderizarTablas } from '../inventario/inventario.ui.js';
 import { renderizarExpedientes } from '../expedientes/expedientes.ui.js';
+import { obtenerExpedientes } from '../expedientes/expedientes.data.js';
 import { obtenerDepartamentos } from '../seguridad/departamentos.data.js';
 
 function generarIdMenuDepartamento(nombre) {
@@ -69,6 +70,18 @@ export async function actualizarDashboard() {
         document.getElementById('dash-danado').innerText = danado;
     } catch (error) {
         console.error("Error al cargar las cifras del dashboard:", error);
+    }
+
+    // --- TARJETA DE EXPEDIENTES REGISTRADOS ---
+    const dashExpedientes = document.getElementById('dash-expedientes');
+    if (dashExpedientes) {
+        try {
+            const expedientes = await obtenerExpedientes('historial');
+            dashExpedientes.innerText = Array.isArray(expedientes) ? expedientes.length : '-';
+        } catch (error) {
+            console.error("Error al cargar el total de expedientes:", error);
+            dashExpedientes.innerText = '-';
+        }
     }
 }
 
