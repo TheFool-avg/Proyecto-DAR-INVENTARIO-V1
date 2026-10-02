@@ -306,6 +306,15 @@
         </button>
     </div>
 
+    <div class="filter-container" style="display:flex; align-items:center; gap:15px; margin-bottom:20px;">
+        <label style="font-weight: bold; font-size: 0.9rem;">Área de Adscripción:</label>
+
+        <select id="filtro-reporte-area-bm2" onchange="renderizarReporteBM2()"
+            style="padding: 8px; border-radius: 6px; border: 1px solid var(--border);">
+            <option value="todos">Todas las Áreas</option>
+        </select>
+    </div>
+
     <div class="table-container">
         <table class="data-table" id="tabla-bm2">
             <thead>

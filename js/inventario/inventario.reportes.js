@@ -14,8 +14,8 @@ import {
     renderizarControlesPaginacionReportes
 } from './paginacion.reportes.js';
 
-async function poblarSelectAreasReporte() {
-    const select = document.getElementById('filtro-reporte-area');
+async function poblarSelectAreasReporte(selectId) {
+    const select = document.getElementById(selectId);
     if (!select) return;
 
     const actual = select.value;
@@ -44,7 +44,7 @@ async function poblarSelectAreasReporte() {
 
 // ========================= BM-1 =========================
 export async function renderizarReporteBM1() {
-    await poblarSelectAreasReporte();
+    await poblarSelectAreasReporte('filtro-reporte-area');
 
     const areaFiltro = document.getElementById('filtro-reporte-area').value;
     const bm1body = document.getElementById("bm1-body");
@@ -115,6 +115,9 @@ export async function renderizarReporteBM1() {
 
 // ========================= BM-2 =========================
 export async function renderizarReporteBM2() {
+    await poblarSelectAreasReporte('filtro-reporte-area-bm2');
+
+    const areaFiltro = document.getElementById('filtro-reporte-area-bm2').value;
     const tbody = document.getElementById('bm2-body');
     if (!tbody) return;
 
@@ -129,14 +132,20 @@ export async function renderizarReporteBM2() {
 
         tbody.innerHTML = "";
 
-        if (!db_bajas || db_bajas.length === 0) {
+        // 1. Filtrar por área
+        const filtrados = db_bajas.filter(item => {
+            if (areaFiltro !== 'todos' && item.area !== areaFiltro) return false;
+            return true;
+        });
+
+        if (filtrados.length === 0) {
             tbody.innerHTML = `<tr><td colspan="7" style="text-align:center; color:var(--text-muted); padding:20px;">No hay bajas registradas.</td></tr>`;
             return;
         }
 
-        // 1. Paginación
+        // 2. Paginación
         let pagina = getPaginaBM2();
-        let totalPaginas = Math.ceil(db_bajas.length / registrosPorPaginaReportes);
+        let totalPaginas = Math.ceil(filtrados.length / registrosPorPaginaReportes);
         if (totalPaginas < 1) totalPaginas = 1;
 
         if (pagina > totalPaginas) pagina = totalPaginas;
@@ -145,9 +154,9 @@ export async function renderizarReporteBM2() {
         setPaginaBM2(pagina);
 
         const inicio = (pagina - 1) * registrosPorPaginaReportes;
-        const datosPagina = db_bajas.slice(inicio, inicio + registrosPorPaginaReportes);
+        const datosPagina = filtrados.slice(inicio, inicio + registrosPorPaginaReportes);
 
-        // 2. Renderizar
+        // 3. Renderizar
         datosPagina.forEach(item => {
             tbody.innerHTML += `
                 <tr>
@@ -161,11 +170,11 @@ export async function renderizarReporteBM2() {
                 </tr>`;
         });
 
-        // 3. Controles de paginación
+        // 4. Controles de paginación
         renderizarControlesPaginacionReportes(
             "paginacion-bm2",
             pagina,
-            db_bajas.length,
+            filtrados.length,
             "cambiarPaginaBM2"
         );
     } catch (error) {
